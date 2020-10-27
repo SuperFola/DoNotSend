@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from scapy.all import DNS, DNSQR, DNSRR, IP, send, sniff, sr1, UDP
-
+from scapy.layers.inet import IP
+from scapy.layers.dns import DNS
 
 class DNSHeaders:
     class QR:

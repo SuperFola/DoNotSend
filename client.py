@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-from utils import IP, UDP, DNS, DNSQR, sr1, DNSHeaders
+from utils import DNSHeaders
+from scapy.layers.inet import IP, UDP
+from scapy.layers.dns import DNS, DNSQR
+from scapy.all import sr1
 
 DEST = "127.0.0.1"
 VERBOSE = 2

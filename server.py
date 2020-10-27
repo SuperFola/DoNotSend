@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
 
-from utils import (
-    sniff,
-    check_if_correct_dns_request,
-    DNS,
-    DNSRR,
-    UDP,
-    IP,
-    DNSQR,
-    send,
-    sr1,
-    DNSHeaders,
-)
+from utils import check_if_correct_dns_request, DNSHeaders
+from scapy.layers.inet import IP, UDP
+from scapy.layers.dns import DNS, DNSQR, DNSRR
+from scapy.all import send, sniff, sr1
 
 
 IFACE = "lo"
