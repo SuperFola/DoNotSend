@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from scapy.layers.dns import DNS
-
 
 class DNSHeaders:
     class QR:
@@ -16,7 +14,7 @@ class DNSHeaders:
     class RCode:
         NoErr = 0
         FormatErr = 1
-        ServerFailu = 2
+        ServerFailure = 2
         NameErr = 3
         NotImpl = 4
         Refused = 5
@@ -41,16 +39,3 @@ class DNSAnswer:
 
     class Class:
         IP = 0x0001
-
-
-def check_if_correct_dns_request(pkt):
-    """
-        opcode  (4bits)  : type of the message
-        ancount (16bits) : the number of ressource records provided
-    """
-    return (
-        DNS in pkt
-        and pkt[DNS].opcode == DNSHeaders.OpCode.StdQuery
-        and pkt[DNS].ancount == 0
-        and pkt[DNS].qr == DNSHeaders.QR.Query
-    )
