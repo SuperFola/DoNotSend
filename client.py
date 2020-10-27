@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
-from scapy.sendrecv import sr1
+import logging
+
 from scapy.layers.dns import DNS, DNSQR
 from scapy.layers.inet import IP, UDP
+from scapy.sendrecv import sr1
 
 from converter import decode, encode
-from utils import DNSHeaders
+from utils import DNSHeaders, init_logger
 
 
 class Client:
@@ -21,16 +23,20 @@ class Client:
         pkt /= UDP(dport=53)
         pkt /= DNS(rd=0, qr=DNSHeaders.QR.Query, qd=DNSQR(qname=crafted_domain))
 
-        answers = sr1(pkt, verbose=self.verb)
-        return answers[DNS]
+        answer = sr1(pkt, verbose=self.verb, timeout=1)
+        return answer[DNS] if answer is not None else None
 
     def recv(self, pkt: DNS):
-        print(f"ANCOUNT: {pkt.ancount}")
-        for i in range(pkt.ancount):
-            print(f"Message {i}: {pkt.an[i].rrname}")
+        if pkt is not None:
+            logging.debug(f"ANCOUNT: {pkt.ancount}")
+            for i in range(pkt.ancount):
+                logging.info(f"Message {i}: {pkt.an[i].rrname}")
+        else:
+            logging.warn("Packet was none, most likely timeout")
 
 
 if __name__ == "__main__":
+    init_logger()
     client = Client("127.0.0.1", "12f.pl", verbosity=2)
     pkt = client.send("hello world")
     client.recv(pkt)

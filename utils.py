@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 
+import logging
+
+
+def init_logger(log_level: int=logging.DEBUG):
+    logging.basicConfig(
+        # filename="file.log",
+        # encoding="utf-8",
+        format="[%(asctime)s] %(levelname)s:%(message)s",
+        level=log_level,
+    )
+
 
 class DNSHeaders:
     class QR:

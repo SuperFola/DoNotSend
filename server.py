@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
-from scapy.sendrecv import send, sniff
+import logging
+
 from scapy.layers.dns import DNS, DNSQR, DNSRR
 from scapy.layers.inet import IP, UDP
+from scapy.sendrecv import send, sniff
 
-from utils import DNSHeaders
+from converter import decode, encode
+from utils import DNSHeaders, init_logger
 
 
 class Server:
@@ -30,7 +33,7 @@ class Server:
 
     def dns_responder(self, pkt: IP):
         if self.is_correct_pkt(pkt):
-            question_record = str(pkt[DNSQR].qname)
+            question_record = decode(str(pkt[DNSQR].qname))
 
             # keep destination
             answer = IP(dst=pkt[IP].src, src=self.host_ip)
@@ -53,7 +56,7 @@ class Server:
             return f"DNS response for {question_record} sent to {pkt[IP].src}"
 
     def run(self):
-        print(f"DNS responder started on {self.host_ip}:53")
+        logging.info(f"DNS responder started on {self.host_ip}:53")
         sniff(
             filter=f"udp port 53 and ip dst {self.host_ip}",
             prn=self.dns_responder,
@@ -62,5 +65,6 @@ class Server:
 
 
 if __name__ == "__main__":
+    init_logger()
     server = Server("lo", "127.0.0.1", "12f.pl")
     server.run()
