@@ -6,7 +6,7 @@ from scapy.layers.dns import DNS, DNSQR, DNSRR
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sniff
 
-from converter import decode, encode
+from converter import Domain
 from utils import DNSHeaders, init_logger
 
 
@@ -33,13 +33,18 @@ class Server:
 
     def dns_responder(self, pkt: IP):
         if self.is_correct_pkt(pkt):
-            question_record = decode(str(pkt[DNSQR].qname))
+            qrecord = pkt[DNSQR].qname.decode("utf-8")
+            subdomain = qrecord[:len(qrecord) - 2 - len(self.domain)]
+            logging.debug("subdomain: %s", subdomain)
+            data = Domain.decode(subdomain)
+            logging.debug("decoded: %s", data)
 
             # keep destination
             answer = IP(dst=pkt[IP].src, src=self.host_ip)
             # specify protocol, UDP:53
             answer /= UDP(dport=pkt[UDP].sport, sport=53)
 
+            # TODO remove
             messages = DNSRR(rrname="test", rdata=self.host_ip) / DNSRR(
                 rrname="hello", rdata=self.host_ip
             )
@@ -53,7 +58,6 @@ class Server:
                 an=messages,
             )
             send(answer, verbose=0, iface=self.interface)
-            return f"DNS response for {question_record} sent to {pkt[IP].src}"
 
     def run(self):
         logging.info(f"DNS responder started on {self.host_ip}:53")

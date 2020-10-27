@@ -6,7 +6,7 @@ from scapy.layers.dns import DNS, DNSQR
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import sr1
 
-from converter import decode, encode
+from converter import Domain
 from utils import DNSHeaders, init_logger
 
 
@@ -17,7 +17,8 @@ class Client:
         self.verb = verbosity
 
     def send(self, message: str):
-        crafted_domain = f"{encode(message)}.{self.domain}"
+        crafted_domain = f"{Domain.encode(message)}.{self.domain}"
+        logging.debug("crafted domain: %s", crafted_domain)
 
         pkt = IP(dst=self.dns_server)
         pkt /= UDP(dport=53)
