@@ -4,19 +4,30 @@ import base64
 
 
 def b32encode(data: str) -> str:
-    return base64.b32encode(bytearray(data, "ascii")).decode("utf-8")
+    data_bytes = bytearray(data, "ascii")
+    out = base64.b32encode(data_bytes).decode("utf-8")
+    return out.replace("=", "")  # remove padding
 
 
 def b32decode(data: str) -> str:
-    return base64.b32decode(bytearray(data, "ascii")).decode("utf-8")
+    # add padding
+    data += "=" * (8 - (len(data) % 8))
+    data_bytes = bytearray(data, "ascii")
+    return base64.b32decode(data_bytes).decode("utf-8")
 
 
 def b64encode(data: str) -> str:
-    return base64.b64encode(bytearray(data, "ascii")).decode("utf-8")
+    data_bytes = bytearray(data, "ascii")
+    out = base64.urlsafe_b64encode(data_bytes).decode("utf-8")
+    # remove padding
+    return out.replace("=", "")
 
 
 def b64decode(data: str) -> str:
-    return base64.b64decode(bytearray(data, "ascii")).decode("utf-8")
+    # add padding
+    data += "=" * (4 - (len(data) % 4))
+    data_bytes = bytearray(data, "ascii")
+    return base64.urlsafe_b64decode(data_bytes).decode("utf-8")
 
 
 # to be able to have multiple encoders / decoders
