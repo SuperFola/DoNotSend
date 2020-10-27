@@ -10,7 +10,7 @@ from utils import (
     DNSQR,
     send,
     sr1,
-    DNSHeaders
+    DNSHeaders,
 )
 
 
