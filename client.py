@@ -9,12 +9,7 @@ VERBOSE = 2
 def send_msg(msg: str, dest: str):
     pkt = IP(dst=dest)
     pkt /= UDP(dport=53)
-    pkt /= DNS(
-        rd=0, qr=DNSHeaders.QR.Query,
-        qd=DNSQR(
-            qname=msg
-        )
-    )
+    pkt /= DNS(rd=0, qr=DNSHeaders.QR.Query, qd=DNSQR(qname=msg))
 
     answer = sr1(pkt, verbose=VERBOSE)
     return answer[DNS]
