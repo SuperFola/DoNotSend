@@ -11,7 +11,7 @@ from utils import DNSHeaders, init_logger
 
 
 class Client:
-    def __init__(self, dns_server: str, domain: str, verbosity: int=0):
+    def __init__(self, dns_server: str, domain: str, verbosity: int = 0):
         self.dns_server = dns_server
         self.domain = domain
         self.verb = verbosity

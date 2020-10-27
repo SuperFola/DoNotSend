@@ -3,7 +3,7 @@
 import logging
 
 
-def init_logger(log_level: int=logging.DEBUG):
+def init_logger(log_level: int = logging.DEBUG):
     logging.basicConfig(
         # filename="file.log",
         # encoding="utf-8",

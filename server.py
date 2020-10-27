@@ -16,12 +16,14 @@ class Server:
         self.host_ip = host_ip
         self.domain = domain
 
-    def is_correct_pkt(self, pkt: IP):
+    def is_correct_pkt(self, pkt: IP) -> bool:
         """
             opcode  (4bits)  : type of the message
             ancount (16bits) : the number of ressource records provided
         """
-        check_qname = lambda q: q[len(q) - len(self.domain) - 2:len(q) - 2]
+
+        def check_qname(q: str) -> str:
+            return q[len(q) - len(self.domain) - 2 : len(q) - 2]
 
         return (
             DNS in pkt
@@ -34,7 +36,7 @@ class Server:
     def dns_responder(self, pkt: IP):
         if self.is_correct_pkt(pkt):
             qrecord = pkt[DNSQR].qname.decode("utf-8")
-            subdomain = qrecord[:len(qrecord) - 2 - len(self.domain)]
+            subdomain = qrecord[: len(qrecord) - 2 - len(self.domain)]
             logging.debug("subdomain: %s", subdomain)
             data = Domain.decode(subdomain)
             logging.debug("decoded: %s", data)

@@ -21,6 +21,7 @@ def b64decode(data: str) -> str:
 
 # to be able to have multiple encoders / decoders
 
+
 class Domain:
     encode = b32encode
     decode = b32decode
