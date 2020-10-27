@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-from utils import (
-    IP, UDP, DNS, DNSQR, sr1, DNSHeaders
-)
+from utils import IP, UDP, DNS, DNSQR, sr1, DNSHeaders
 
-DEST = '127.0.0.1'
+DEST = "127.0.0.1"
 VERBOSE = 2
 
 
@@ -12,8 +10,7 @@ def send_msg(msg: str, dest: str):
     pkt = IP(dst=dest)
     pkt /= UDP(dport=53)
     pkt /= DNS(
-        rd=0,  # no recursion desired
-        qr=DNSHeaders.QR.Query,
+        rd=0, qr=DNSHeaders.QR.Query,
         qd=DNSQR(
             qname=msg
         )
@@ -23,7 +20,7 @@ def send_msg(msg: str, dest: str):
     return answer[DNS]
 
 
-pkt = send_msg('hello world', DEST)
+pkt = send_msg("hello world", DEST)
 
 
 print(f"ANCOUNT {pkt.ancount}")
