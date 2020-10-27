@@ -6,8 +6,8 @@ from scapy.layers.dns import DNS, DNSQR, DNSRR
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sniff
 
-from converter import Domain
-from utils import DNSHeaders, init_logger
+from converter import Domain, Content
+from utils import DNSHeaders, DNSAnswer, init_logger
 
 
 class Server:
@@ -45,8 +45,10 @@ class Server:
             answer /= UDP(dport=pkt[UDP].sport, sport=53)
 
             # TODO remove
-            messages = DNSRR(rrname="test", rdata=self.host_ip) / DNSRR(
-                rrname="hello", rdata=self.host_ip
+            messages = DNSRR(
+                rrname=Content.encode("test"),
+                rdata=self.host_ip,
+                type=DNSAnswer.Type.Text,
             )
 
             # craft the DNS packet
@@ -54,7 +56,7 @@ class Server:
                 id=pkt[DNS].id,
                 aa=1,  # authoritative answer
                 qr=DNSHeaders.QR.Answer,
-                ancount=2,  # answers count
+                ancount=1,  # answers count
                 an=messages,
             )
             send(answer, verbose=0, iface=self.interface)

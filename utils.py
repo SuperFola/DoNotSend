@@ -46,6 +46,7 @@ class DNSAnswer:
         HostAddr = 0x0001
         NameServer = 0x0002
         CName = 0x0005
+        Text = 0x0010
         MailServer = 0x000F
 
     class Class:

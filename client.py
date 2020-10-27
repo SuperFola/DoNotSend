@@ -6,7 +6,7 @@ from scapy.layers.dns import DNS, DNSQR
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import sr1
 
-from converter import Domain
+from converter import Domain, Content
 from utils import DNSHeaders, init_logger
 
 
@@ -31,7 +31,9 @@ class Client:
         if pkt is not None:
             logging.debug(f"ANCOUNT: {pkt.ancount}")
             for i in range(pkt.ancount):
-                logging.info(f"Message {i}: {pkt.an[i].rrname}")
+                rrname = pkt.an[i].rrname.decode("utf-8")
+                logging.info("Message %i: %s", i, rrname[:-1])
+                logging.info("Decoded: %s", Content.decode(rrname[:-1]))
         else:
             logging.warn("Packet was none, most likely timeout")
 

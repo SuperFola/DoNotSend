@@ -96,6 +96,7 @@
         (CNAME) 0x0005
         (NS) 0x0002
         (MX) 0x000f
+        (TXT) 0x0010
     CLASS (2 octets) : class of data in the RDATA field
         internet address = 0x0001
     TTL (4 octets) : number of seconds the results can be cached
