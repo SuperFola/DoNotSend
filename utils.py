@@ -33,6 +33,13 @@ class DNSHeaders:
         InvQuery = 1
         SrvStatusQuery = 2
 
+    class Type:
+        HostAddr = 0x0001
+        NameServer = 0x0002
+        CName = 0x0005
+        Text = 0x0010
+        MailServer = 0x000F
+
     class RCode:
         NoErr = 0
         FormatErr = 1

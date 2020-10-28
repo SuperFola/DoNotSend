@@ -63,7 +63,7 @@ class Server:
                 ancount=1,  # answers count
                 an=messages,
             )
-            send(answer, verbose=0, iface=self.interface)
+            send(answer, verbose=2, iface=self.interface)
 
     def run(self):
         logging.info(f"DNS responder started on {self.host_ip}:53")

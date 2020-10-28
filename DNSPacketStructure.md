@@ -65,6 +65,7 @@
         (A) host addresses = 0x0001
         (MX) mail server = 0x000f
         (NS) name servers = 0x0002
+        (TXT) text = 0x0010
     QCLASS (2 octets) : the class of the query
         internet addresses = 0x0001
 

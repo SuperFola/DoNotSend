@@ -24,7 +24,14 @@ class Client:
 
         pkt = IP(dst=self.dns_server)
         pkt /= UDP(dport=53)
-        pkt /= DNS(rd=0, qr=DNSHeaders.QR.Query, qd=DNSQR(qname=crafted_domain))
+        pkt /= DNS(
+            rd=0,
+            qr=DNSHeaders.QR.Query,
+            qd=DNSQR(
+                qname=crafted_domain,
+                qtype=DNSHeaders.Type.HostAddr,
+            ),
+        )
 
         answer = sr1(pkt, verbose=self.verb, timeout=1)
         return answer[DNS] if answer is not None else None
@@ -36,6 +43,7 @@ class Client:
                 rrname = pkt.an[i].rrname.decode("utf-8")
                 logging.info("Message %i: %s", i, rrname[:-1])
                 logging.info("Decoded: %s", Content.decode(rrname[:-1]))
+            logging.info(pkt[DNS].summary())
         else:
             logging.warn("Packet was none, most likely timeout")
 
