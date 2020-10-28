@@ -40,6 +40,6 @@ class Client:
 
 if __name__ == "__main__":
     init_logger()
-    client = Client("127.0.0.1", "12f.pl", verbosity=2)
+    client = Client("163.172.237.14", "12f.pl", verbosity=2)
     pkt = client.send("hello world")
     client.recv(pkt)
