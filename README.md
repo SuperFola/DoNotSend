@@ -4,35 +4,39 @@ The DNS protocol is convetionally used to ask for the IP address of a given webs
 
 Here it's used to send messages and retrieve other messages, instead of asking for a website IP address and retrieving its IP address.
 
-## [WIP] client
+## Setup
 
-Can send a message using a DNS query, message put in qname field.
+Environment variables:
+* `DNS_HOSTNAME`
+* `DNS_PUBLIC_IP`
+* `DNS_INTERFACE`
 
-Retrieve message(s) from the an field, can receive an arbitrary amount of messages, display them in the order they are appearing (stored in the name field of the answer).
+## client
+
+We can include arbitrary data in the hostname which the server then can interpret and execute/relay.
+Thus we put our data in the qname section of the query, encoded using base32, without the padding (we can easily recalculate it).
+
+Currently, it's just a WIP, it sends a single message "hello world" and get responses from the server which are displayed.
 
 ### Running the client
 
 ```shell
 # needs to run as root because it is using port 53
-sudo python3 client.py
+python3 client.py
 ```
 
-It will send a single message (DNS request), "hello world", on a DNS server running on `127.0.0.1:53`, then it displays all the answers received.
+## server
 
-## [WIP] server
+It receives queries and read the wanted "fake" hostname, decode the data put in the hostname as base32.
 
-Receive messages, read them, send back a DNS answer with two answers:
-* the first contains test in the name of the answer
-* the second contains hello in the name of the answer
+Then it replies through a DNS TXT reply, where the data is encoded as base64 without padding.
 
 ### Running the server
 
 ```shell
 # needs to run as root because it is binding port 53
-sudo python3 server.py
+python3 server.py
 ```
-
-Runs on `127.0.0.1:53`, and when it receives a message (DNS request), sends 2 answers in the DNS reply packet: "test" and "hello".
 
 ## Documentation
 

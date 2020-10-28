@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import logging
 
 from scapy.layers.dns import DNS, DNSQR
@@ -40,6 +41,6 @@ class Client:
 
 if __name__ == "__main__":
     init_logger()
-    client = Client("127.0.0.1", "12f.pl", verbosity=2)
+    client = Client(os.environ["DNS_PUBLIC_IP"], os.environ["DNS_HOSTNAME"], verbosity=2)
     pkt = client.send("hello world")
     client.recv(pkt)
