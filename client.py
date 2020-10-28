@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import os
+import sys
+import socket
 import logging
 
 from scapy.layers.dns import DNS, DNSQR
@@ -8,12 +9,12 @@ from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import sr1
 
 from converter import Domain, Content
-from utils import DNSHeaders, init_logger
+from utils import DNSHeaders, init_logger, get_ip_from_hostname
 
 
 class Client:
-    def __init__(self, dns_server: str, domain: str, verbosity: int = 0):
-        self.dns_server = dns_server
+    def __init__(self, domain: str, ip: str, verbosity: int = 0):
+        self.dns_server = ip
         self.domain = domain
         self.verb = verbosity
 
@@ -41,6 +42,14 @@ class Client:
 
 if __name__ == "__main__":
     init_logger()
-    client = Client(os.environ["DNS_PUBLIC_IP"], os.environ["DNS_HOSTNAME"], verbosity=2)
+    if len(sys.argv) < 2:
+        logging.error("Usage: %s hostname", sys.argv[0])
+        sys.exit(-1)
+
+    ip = get_ip_from_hostname(sys.argv[1])
+    if ip is None:
+        sys.exit(-1)
+
+    client = Client(sys.argv[1], ip, verbosity=2)
     pkt = client.send("hello world")
     client.recv(pkt)

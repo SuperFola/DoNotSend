@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
 
+import socket
 import logging
+
+
+def get_ip_from_hostname(hostname: str) -> str or None:
+    try:
+        ip = socket.gethostbyname(hostname)
+    except socket.gaierror as e:
+        logging.error(e)
+        return None
+    else:
+        return ip
 
 
 def init_logger(log_level: int = logging.DEBUG):

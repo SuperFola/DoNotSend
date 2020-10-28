@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import os
+import sys
+import socket
 import logging
 
 from scapy.layers.dns import DNS, DNSQR, DNSRR
@@ -8,11 +9,11 @@ from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sniff
 
 from converter import Domain, Content
-from utils import DNSHeaders, DNSAnswer, init_logger
+from utils import DNSHeaders, DNSAnswer, init_logger, get_ip_from_hostname
 
 
 class Server:
-    def __init__(self, interface: str, host_ip: str, domain: str):
+    def __init__(self, interface: str, domain: str, host_ip: str):
         self.interface = interface
         self.host_ip = host_ip
         self.domain = domain
@@ -75,5 +76,13 @@ class Server:
 
 if __name__ == "__main__":
     init_logger()
-    server = Server(os.environ["DNS_INTERFACE"], os.environ["DNS_PUBLIC_IP"], os.environ["DNS_HOSTNAME"])
+    if len(sys.argv) < 3:
+        logging.error("Usage: %s interface hostname", sys.argv[0])
+        sys.exit(-1)
+
+    ip = get_ip_from_hostname(sys.argv[2])
+    if ip is None:
+        sys.exit(-1)
+
+    server = Server(sys.argv[1], sys.argv[2], ip)
     server.run()
