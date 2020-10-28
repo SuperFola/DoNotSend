@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import logging
 
 from scapy.layers.dns import DNS, DNSQR, DNSRR
@@ -74,5 +75,5 @@ class Server:
 
 if __name__ == "__main__":
     init_logger()
-    server = Server("lo", "127.0.0.1", "12f.pl")
+    server = Server(os.environ["DNS_INTERFACE"], os.environ["DNS_PUBLIC_IP"], os.environ["DNS_HOSTNAME"])
     server.run()
