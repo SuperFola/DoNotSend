@@ -44,14 +44,16 @@ class Server:
             logging.debug("decoded: %s", data)
 
             # keep destination
+            logging.debug("packet from %s:%i", pkt[IP].src, pkt[UDP].sport)
             answer = IP(dst=pkt[IP].src, src=self.host_ip)
             # specify protocol, UDP:53
             answer /= UDP(dport=pkt[UDP].sport, sport=53)
 
-            # TODO remove
+            logging.debug("incomming packet type: %s", hex(pkt[DNS].qd.qtype))
+            # TODO ensure that we're under the 500 bytes limit
             messages = DNSRR(
-                rrname=Content.encode("test"),
-                rdata=self.host_ip,
+                rrname=pkt[DNS].qd.qname,
+                rdata=Content.encode("test"),
                 type=DNSAnswer.Type.Text,
             )
 
@@ -63,6 +65,7 @@ class Server:
                 ancount=1,  # answers count
                 an=messages,
             )
+            logging.debug(answer[DNS].summary())
             send(answer, verbose=2, iface=self.interface)
 
     def run(self):
