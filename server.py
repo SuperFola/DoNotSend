@@ -9,6 +9,7 @@ from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sniff
 
 from converter import Domain, Content
+from packet import Packet
 from utils import DNSHeaders, DNSAnswer, init_logger, get_ip_from_hostname
 
 
@@ -18,55 +19,41 @@ class Server:
         self.host_ip = host_ip
         self.domain = domain
 
-    def is_correct_pkt(self, pkt: IP) -> bool:
-        """
-            opcode  (4bits)  : type of the message
-            ancount (16bits) : the number of ressource records provided
-        """
-
-        def check_qname(q: str) -> str:
-            return q[len(q) - len(self.domain) - 2 : len(q) - 2]
-
-        return (
-            DNS in pkt
-            and pkt[DNS].opcode == DNSHeaders.OpCode.StdQuery
-            and pkt[DNS].qr == DNSHeaders.QR.Query
-            and check_qname(str(pkt[DNSQR].qname))
-            and pkt[DNS].ancount == 0
-        )
-
     def dns_responder(self, pkt: IP):
-        if self.is_correct_pkt(pkt):
-            qrecord = pkt[DNSQR].qname.decode("utf-8")
-            subdomain = qrecord[: len(qrecord) - 2 - len(self.domain)]
+        packet = Packet(pkt, self.domain)
+
+        if packet.is_valid_dnsquery():
+            subdomain = packet.subdomain_from_qname
             logging.debug("subdomain: %s", subdomain)
             data = Domain.decode(subdomain)
             logging.debug("decoded: %s", data)
 
             # keep destination
-            logging.debug("packet from %s:%i", pkt[IP].src, pkt[UDP].sport)
-            answer = IP(dst=pkt[IP].src, src=self.host_ip)
-            # specify protocol, UDP:53
-            answer /= UDP(dport=pkt[UDP].sport, sport=53)
-
-            logging.debug("incomming packet type: %s", hex(pkt[DNS].qd.qtype))
-            # TODO ensure that we're under the 500 bytes limit
-            messages = DNSRR(
-                rrname=pkt[DNS].qd.qname,
-                rdata=Content.encode("test"),
-                type=DNSAnswer.Type.Text,
+            logging.debug("packet from %s:%i", packet.src, packet.sport)
+            answer = Packet.build_reply(
+                {
+                    "src": self.host_ip,
+                    "dst": packet.src,
+                    "dport": packet.sport,
+                    "dns": {
+                        "id": packet.id,
+                        # TODO ensure that we're under the 500 bytes limit
+                        "messages": [
+                            DNSRR(
+                                rrname=packet.qname,
+                                rdata=Content.encode("test"),
+                                type=DNSAnswer.Type.Text,
+                            ),
+                        ],
+                    },
+                },
+                self.domain,
             )
 
-            # craft the DNS packet
-            answer /= DNS(
-                id=pkt[DNS].id,
-                aa=1,  # authoritative answer
-                qr=DNSHeaders.QR.Answer,
-                ancount=1,  # answers count
-                an=messages,
-            )
-            logging.debug(answer[DNS].summary())
-            send(answer, verbose=2, iface=self.interface)
+            logging.debug("incomming packet type: %s", hex(packet.question.qtype))
+
+            logging.debug(answer.dns.summary())
+            send(answer.packet, verbose=2, iface=self.interface)
 
     def run(self):
         logging.info(f"DNS responder started on {self.host_ip}:53")

@@ -9,6 +9,7 @@ from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import sr1
 
 from converter import Domain, Content
+from packet import Packet
 from utils import DNSHeaders, init_logger, get_ip_from_hostname
 
 
@@ -22,28 +23,27 @@ class Client:
         crafted_domain = f"{Domain.encode(message)}.{self.domain}"
         logging.debug("crafted domain: %s", crafted_domain)
 
-        pkt = IP(dst=self.dns_server)
-        pkt /= UDP(dport=53)
-        pkt /= DNS(
-            rd=0,
-            qr=DNSHeaders.QR.Query,
-            qd=DNSQR(
-                qname=crafted_domain,
-                qtype=DNSHeaders.Type.HostAddr,
-            ),
+        packet = Packet.build_query(
+            {
+                "dst": self.dns_server,
+                "dns": {
+                    "qname": crafted_domain,
+                }
+            },
+            self.domain,
         )
 
-        answer = sr1(pkt, verbose=self.verb, timeout=1)
+        answer = sr1(packet.packet, verbose=self.verb, timeout=1)
+        print(answer.summary())
         return answer[DNS] if answer is not None else None
 
     def recv(self, pkt: DNS):
         if pkt is not None:
-            logging.debug(f"ANCOUNT: {pkt.ancount}")
-            for i in range(pkt.ancount):
-                rrname = pkt.an[i].rrname.decode("utf-8")
-                logging.info("Message %i: %s", i, rrname[:-1])
-                logging.info("Decoded: %s", Content.decode(rrname[:-1]))
-            logging.info(pkt[DNS].summary())
+            packet = Packet(pkt, self.domain)
+            for i, (rrname, rdata) in enumerate(packet.answers):
+                logging.info("Message %i (%s): %s", i, rrname, rdata)
+                logging.info("Decoded: %s", Content.decode(rdata))
+            logging.info(packet.dns.summary())
         else:
             logging.warn("Packet was none, most likely timeout")
 
