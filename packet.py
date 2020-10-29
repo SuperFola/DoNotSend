@@ -17,10 +17,7 @@ class Packet:
         pkt /= DNS(
             rd=0,  # no recursion desired
             qr=DNSHeaders.QR.Query,
-            qd=DNSQR(
-                qname=layer["dns"]["qname"],
-                qtype=DNSHeaders.Type.HostAddr,
-            ),
+            qd=DNSQR(qname=layer["dns"]["qname"], qtype=DNSHeaders.Type.HostAddr),
         )
 
         return Packet(pkt, domain)
@@ -34,7 +31,7 @@ class Packet:
             aa=1,  # authoritative answer
             qr=DNSHeaders.QR.Answer,
             ancount=len(layer["dns"]["messages"]),
-            an=reduce(op.truediv, layer["dns"]["messages"])
+            an=reduce(op.truediv, layer["dns"]["messages"]),
         )
 
         return Packet(pkt, domain)
@@ -80,10 +77,8 @@ class Packet:
     @property
     def answers(self):
         return [
-            (
-                an.rrname.decode("utf-8")[: -1],
-                b"".join(an.rdata).decode("utf-8")
-            ) for an in self._pkt.an
+            (an.rrname.decode("utf-8")[: -1], b"".join(an.rdata).decode("utf-8"))
+            for an in self._pkt.an
         ]
 
     @property

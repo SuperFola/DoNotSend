@@ -24,13 +24,7 @@ class Client:
         logging.debug("crafted domain: %s", crafted_domain)
 
         packet = Packet.build_query(
-            {
-                "dst": self.dns_server,
-                "dns": {
-                    "qname": crafted_domain,
-                }
-            },
-            self.domain,
+            {"dst": self.dns_server, "dns": {"qname": crafted_domain}}, self.domain,
         )
 
         answer = sr1(packet.packet, verbose=self.verb, timeout=1)

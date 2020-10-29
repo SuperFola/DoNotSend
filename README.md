@@ -10,10 +10,10 @@ Here it's used to send messages and retrieve other messages, instead of asking f
 
 * Python >= 3.7
 * Scapy >= 2.4
-    * if it isn't installed alongside scapy:
-        * libpcap
+  * if it isn't installed alongside scapy:
+    * libpcap
 * venv
-    * Sometimes the wheel module is needed as well
+  * Sometimes the wheel module is needed as well
 
 ```shell
 apt install python3-venv
