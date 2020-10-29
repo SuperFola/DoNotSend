@@ -77,7 +77,7 @@ class Packet:
     @property
     def answers(self):
         return [
-            (an.rrname.decode("utf-8")[: -1], b"".join(an.rdata).decode("utf-8"))
+            (an.rrname.decode("utf-8")[:-1], b"".join(an.rdata).decode("utf-8"))
             for an in self._pkt.an
         ]
 
