@@ -21,14 +21,14 @@ def init_logger(log_level: int = logging.DEBUG):
         datefmt=None,
         reset=True,
         log_colors={
-            "DEBUG":    "cyan",
-            "INFO":     "green",
-            "WARNING":  "yellow",
-            "ERROR":    "red",
+            "DEBUG": "cyan",
+            "INFO": "green",
+            "WARNING": "yellow",
+            "ERROR": "red",
             "CRITICAL": "red",
-            }
-        )
-    logger = logging.getLogger('example')
+        },
+    )
+    logger = logging.getLogger('donotsend')
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logger.addHandler(handler)
