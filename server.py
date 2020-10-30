@@ -55,7 +55,6 @@ class Server:
 
             logging.debug(answer.dns.summary())
             send(answer.packet, verbose=2, iface=self.interface)
-            print(answer.packet[0].show())
 
     def run(self):
         logging.info(f"DNS responder started on {self.host_ip}:53")
