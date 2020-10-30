@@ -23,7 +23,6 @@ class Server:
         packet = Packet(pkt, self.domain)
 
         if packet.is_valid_dnsquery():
-            print(pkt[0].show())
             subdomain = packet.subdomain_from_qname
             logging.debug("subdomain: %s", subdomain)
             data = Domain.decode(subdomain)
