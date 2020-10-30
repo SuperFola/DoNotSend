@@ -23,6 +23,7 @@ class Server:
         packet = Packet(pkt, self.domain)
 
         if packet.is_valid_dnsquery():
+            print(pkt[0].show())
             subdomain = packet.subdomain_from_qname
             logging.debug("subdomain: %s", subdomain)
             data = Domain.decode(subdomain)
@@ -54,6 +55,7 @@ class Server:
 
             logging.debug(answer.dns.summary())
             send(answer.packet, verbose=2, iface=self.interface)
+            print(answer.packet[0].show())
 
     def run(self):
         logging.info(f"DNS responder started on {self.host_ip}:53")
