@@ -2,7 +2,6 @@
 
 import sys
 import socket
-import logging
 
 from scapy.layers.dns import DNS, DNSQR
 from scapy.layers.inet import IP, UDP
@@ -13,6 +12,9 @@ from packet import Packet
 from utils import DNSHeaders, init_logger, get_ip_from_hostname
 
 
+logger = None
+
+
 class Client:
     def __init__(self, domain: str, ip: str, verbosity: int = 0):
         self.dns_server = ip
@@ -21,7 +23,7 @@ class Client:
 
     def send(self, message: str):
         crafted_domain = f"{Domain.encode(message)}.{self.domain}"
-        logging.debug("crafted domain: %s", crafted_domain)
+        logger.debug("crafted domain: %s", crafted_domain)
 
         packet = Packet.build_query(
             {"dst": self.dns_server, "dns": {"qname": crafted_domain}}, self.domain,
@@ -33,17 +35,17 @@ class Client:
         if pkt is not None:
             packet = Packet(pkt, self.domain)
             for i, (rrname, rdata) in enumerate(packet.answers):
-                logging.info("Message %i (%s): %s", i, rrname, rdata)
-                logging.info("Decoded: %s", Content.decode(rdata))
-            logging.info(packet.dns.summary())
+                logger.info("Message %i (%s): %s", i, rrname, rdata)
+                logger.info("Decoded: %s", Content.decode(rdata))
+            logger.info(packet.dns.summary())
         else:
-            logging.warn("Packet was none, most likely timeout")
+            logger.warn("Packet was none, most likely timeout")
 
 
 if __name__ == "__main__":
-    init_logger()
+    logger = init_logger()
     if len(sys.argv) < 2:
-        logging.error("Usage: %s hostname", sys.argv[0])
+        logger.error("Usage: %s hostname", sys.argv[0])
         sys.exit(-1)
 
     ip = get_ip_from_hostname(sys.argv[1])

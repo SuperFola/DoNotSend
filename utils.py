@@ -2,6 +2,7 @@
 
 import socket
 import logging
+from colorlog import ColoredFormatter
 
 
 def get_ip_from_hostname(hostname: str) -> str or None:
@@ -15,12 +16,24 @@ def get_ip_from_hostname(hostname: str) -> str or None:
 
 
 def init_logger(log_level: int = logging.DEBUG):
-    logging.basicConfig(
-        # filename="file.log",
-        # encoding="utf-8",
-        format="[%(asctime)s] %(levelname)s:%(message)s",
-        level=log_level,
-    )
+    formatter = ColoredFormatter(
+        "%(cyan)s[%(asctime)s]%(reset)s in %(filename)s:%(lineno)s %(log_color)s%(levelname)-8s%(reset)s %(message)s", 
+        datefmt=None,
+        reset=True,
+        log_colors={
+            "DEBUG":    "cyan",
+            "INFO":     "green",
+            "WARNING":  "yellow",
+            "ERROR":    "red",
+            "CRITICAL": "red",
+            }
+        )
+    logger = logging.getLogger('example')
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(log_level)
+    return logger
 
 
 class DNSHeaders:
