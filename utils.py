@@ -17,7 +17,7 @@ def get_ip_from_hostname(hostname: str) -> str or None:
 
 def init_logger(log_level: int = logging.DEBUG):
     formatter = ColoredFormatter(
-        "%(cyan)s[%(asctime)s]%(reset)s in %(filename)s:%(lineno)s %(log_color)s%(levelname)-8s%(reset)s %(message)s", 
+        "%(cyan)s[%(asctime)s]%(reset)s in %(filename)s:%(lineno)s %(log_color)s%(levelname)-8s%(reset)s %(message)s",
         datefmt=None,
         reset=True,
         log_colors={
