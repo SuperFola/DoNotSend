@@ -2,6 +2,7 @@
 
 import socket
 import logging
+import colorlog
 
 
 def get_ip_from_hostname(hostname: str) -> str or None:
@@ -15,10 +16,11 @@ def get_ip_from_hostname(hostname: str) -> str or None:
 
 
 def init_logger(log_level: int = logging.DEBUG):
+    colorlog_format = "%(log_color)s [%(asctime)s] %(levelname)s:%(message)s"
     logging.basicConfig(
         # filename="file.log",
         # encoding="utf-8",
-        format="[%(asctime)s] %(levelname)s:%(message)s",
+        format=colorlog_format,
         level=log_level,
     )
 
