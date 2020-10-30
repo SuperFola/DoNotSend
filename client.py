@@ -26,9 +26,9 @@ class Client:
         packet = Packet.build_query(
             {"dst": self.dns_server, "dns": {"qname": crafted_domain}}, self.domain,
         )
-
+        print(packet.packet[0].show())
         answer = sr1(packet.packet, verbose=self.verb, timeout=1)
-        print(answer.summary())
+        print(answer[0].show())
         return answer[DNS] if answer is not None else None
 
     def recv(self, pkt: DNS):

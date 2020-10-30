@@ -1,2 +1,2 @@
 #!/bin/bash
-tcpdump -n -t -i eth0 port 53
+tcpdump -ntvv -i eth0 port 53

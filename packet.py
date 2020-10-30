@@ -79,7 +79,7 @@ class Packet:
         return [
             (an.rrname.decode("utf-8")[:-1], b"".join(an.rdata).decode("utf-8"))
             for an in self._pkt.an
-        ]
+        ] if self._pkt.an is not None else []
 
     @property
     def id(self) -> int:
