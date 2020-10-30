@@ -30,7 +30,7 @@ class Client:
         )
         answer = sr1(packet.packet, verbose=self.verb, timeout=1)
         if answer.haslayer(ICMP) or answer.haslayer(IPerror):
-            logging.warn("Unreachable host or filtered port")
+            logger.critical("Unreachable host or filtered port")
             return None
         return answer[DNS] if answer is not None else None
 
@@ -40,7 +40,7 @@ class Client:
             for i, (rrname, rdata) in enumerate(packet.answers):
                 logger.info("Message %i (%s): %s", i, rrname, rdata)
                 logger.info("Decoded: %s", Content.decode(rdata))
-            logger.info(packet.dns.summary())
+            logger.debug(packet.dns.summary())
         else:
             logger.warn("Packet was none, most likely timeout")
 

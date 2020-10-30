@@ -25,13 +25,14 @@ class Server:
         packet = Packet(pkt, self.domain)
 
         if packet.is_valid_dnsquery():
+            logger.info("got a packet from %s:%i", packet.src, packet.sport)
+
             subdomain = packet.subdomain_from_qname
             logger.debug("subdomain: %s", subdomain)
             data = Domain.decode(subdomain)
             logger.debug("decoded: %s", data)
 
             # keep destination
-            logger.debug("packet from %s:%i", packet.src, packet.sport)
             answer = Packet.build_reply(
                 {
                     "src": self.host_ip,
