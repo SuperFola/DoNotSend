@@ -24,6 +24,7 @@ pip3 install scapy
 # if it fails because it couldn't build the wheel:
 pip3 uninstall scapy && pip3 install wheel && pip3 install scapy
 
+cd src
 # run as admin to check everything is fine
 python3 server.py "interface" "host name"
 # if it complains about libpcap not installed, then:
@@ -40,6 +41,7 @@ Currently, it's just a WIP, it sends a single message "hello world" and get resp
 ### Running the client
 
 ```shell
+cd src
 # needs to run as root because it is using port 53
 python3 client.py "hostname"
 ```
@@ -53,6 +55,7 @@ Then it replies through a DNS TXT reply, where the data is encoded as base64 wit
 ### Running the server
 
 ```shell
+cd src
 # needs to run as root because it is binding port 53
 python3 server.py
 ```
