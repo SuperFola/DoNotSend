@@ -2,7 +2,6 @@
 
 import sys
 import socket
-import logging
 
 from scapy.layers.dns import DNS, DNSQR, DNSRR
 from scapy.layers.inet import IP, UDP
@@ -11,6 +10,9 @@ from scapy.sendrecv import send, sniff
 from converter import Domain, Content
 from packet import Packet
 from utils import DNSHeaders, DNSAnswer, init_logger, get_ip_from_hostname
+
+
+logger = None
 
 
 class Server:
@@ -24,12 +26,12 @@ class Server:
 
         if packet.is_valid_dnsquery():
             subdomain = packet.subdomain_from_qname
-            logging.debug("subdomain: %s", subdomain)
+            logger.debug("subdomain: %s", subdomain)
             data = Domain.decode(subdomain)
-            logging.debug("decoded: %s", data)
+            logger.debug("decoded: %s", data)
 
             # keep destination
-            logging.debug("packet from %s:%i", packet.src, packet.sport)
+            logger.debug("packet from %s:%i", packet.src, packet.sport)
             answer = Packet.build_reply(
                 {
                     "src": self.host_ip,
@@ -50,13 +52,13 @@ class Server:
                 self.domain,
             )
 
-            logging.debug("incomming packet type: %s", hex(packet.question.qtype))
+            logger.debug("incomming packet type: %s", hex(packet.question.qtype))
 
-            logging.debug(answer.dns.summary())
-            send(answer.packet, verbose=2, iface=self.interface)
+            logger.debug(answer.dns.summary())
+            send(answer.packet, verbose=0, iface=self.interface)
 
     def run(self):
-        logging.info(f"DNS responder started on {self.host_ip}:53")
+        logger.info(f"DNS responder started on {self.host_ip}:53")
         sniff(
             filter=f"udp port 53 and ip dst {self.host_ip}",
             prn=self.dns_responder,
@@ -65,9 +67,9 @@ class Server:
 
 
 if __name__ == "__main__":
-    init_logger()
+    logger = init_logger()
     if len(sys.argv) < 3:
-        logging.error("Usage: %s interface hostname", sys.argv[0])
+        logger.error("Usage: %s interface hostname", sys.argv[0])
         sys.exit(-1)
 
     ip = get_ip_from_hostname(sys.argv[2])
