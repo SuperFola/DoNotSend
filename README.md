@@ -59,4 +59,4 @@ python3 server.py
 
 ## Documentation
 
-* [DNS packet structure](DNSPacketStructure.md)
+* [DNS packet structure](doc/DNSPacketStructure.md)

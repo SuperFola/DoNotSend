@@ -28,7 +28,7 @@ def init_logger(log_level: int = logging.DEBUG):
             "CRITICAL": "red",
         },
     )
-    logger = logging.getLogger('donotsend')
+    logger = logging.getLogger("donotsend")
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logger.addHandler(handler)
