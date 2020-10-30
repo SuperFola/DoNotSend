@@ -5,7 +5,7 @@ import socket
 import logging
 
 from scapy.layers.dns import DNS, DNSQR
-from scapy.layers.inet import IP, UDP
+from scapy.layers.inet import IP, UDP, ICMP, IPerror
 from scapy.sendrecv import sr1
 
 from converter import Domain, Content
@@ -27,6 +27,9 @@ class Client:
             {"dst": self.dns_server, "dns": {"qname": crafted_domain}}, self.domain,
         )
         answer = sr1(packet.packet, verbose=self.verb, timeout=1)
+        if answer.haslayer(ICMP) or answer.haslayer(IPerror):
+            logging.warn("Unreachable host or filtered port")
+            return None
         return answer[DNS] if answer is not None else None
 
     def recv(self, pkt: DNS):
@@ -50,6 +53,6 @@ if __name__ == "__main__":
     if ip is None:
         sys.exit(-1)
 
-    client = Client(sys.argv[1], ip, verbosity=2)
+    client = Client(sys.argv[1], ip)
     pkt = client.send("hello world")
     client.recv(pkt)
