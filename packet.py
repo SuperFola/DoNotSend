@@ -28,7 +28,6 @@ class Packet:
         pkt /= UDP(dport=layer["dport"], sport=53)
         pkt /= DNS(
             id=layer["dns"]["id"],
-            aa=1,  # authoritative answer
             qr=DNSHeaders.QR.Answer,
             ancount=len(layer["dns"]["messages"]),
             an=reduce(op.truediv, layer["dns"]["messages"]),
