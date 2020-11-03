@@ -31,4 +31,16 @@ jobs:
         uses: github/super-linter@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_PYTHON_FLAKE8: false
+          VALIDATE_BASH: true
+          VALIDATE_BASH_EXEC: true
+          VALIDATE_CSS: true
+          VALIDATE_DOCKERFILE: true
+          VALIDATE_DOCKERFILE_HADOLINT: true
+          VALIDATE_ENV: true
+          VALIDATE_HTML: true
+          VALIDATE_JSON: true
+          VALIDATE_LATEX: true
+          VALIDATE_PYTHON_BLACK: true
+          VALIDATE_POWERSHELL: true
+          VALIDATE_SHELL_SHFMT: true
+          VALIDATE_SQL: true
