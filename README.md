@@ -2,7 +2,7 @@
 
 For now, it works on **Linux only**.
 
-The DNS protocol is convetionally used to ask for the IP address of a given website.
+The DNS protocol is conventionally used to ask for the IP address of a given website.
 
 Here it's used to send messages and retrieve other messages, instead of asking for a website IP address and retrieving its IP address.
 
@@ -63,3 +63,4 @@ python3 server.py
 ## Documentation
 
 * [DNS packet structure](doc/DNSPacketStructure.md)
+* [Design choices](doc/design.md)
