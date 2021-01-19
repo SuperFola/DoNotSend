@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
-import sys
+import binascii
 import socket
+import sys
 import threading
 
 from scapy.layers.dns import DNS, DNSQR, DNSRR
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sniff
 
-from converter import Domain, Content
+from converter import Content, Domain
 from packet import Packet
-from utils import DNSHeaders, DNSAnswer, init_logger, get_ip_from_hostname
+from utils import DNSAnswer, DNSHeaders, get_ip_from_hostname, init_logger
 
 
 def socket_server(ip: str):
@@ -37,11 +38,14 @@ class Server:
         if packet.is_valid_dnsquery():
             self.logger.info("got a packet from %s:%i", packet.src, packet.sport)
 
-            # TEMP fix
             subdomain = packet.subdomain_from_qname.split('.')[0]
             self.logger.debug("subdomain: %s", subdomain)
-            data = Domain.decode(subdomain)
-            self.logger.debug("decoded: %s", data)
+
+            try:
+                data = Domain.decode(subdomain)
+            except binascii.Error:
+                # couldn't decode, drop the packet and do nothing
+                return
 
             # keep destination
             answer = Packet.build_reply(
@@ -66,9 +70,7 @@ class Server:
                 self.domain,
             )
 
-            self.logger.debug("incomming packet type: %s", hex(packet.question.qtype))
-
-            self.logger.debug(answer.dns.summary())
+            self.logger.debug("Answering %s", answer.dns.summary())
             send(answer.packet, verbose=0, iface=self.interface)
 
     def run(self):

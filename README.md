@@ -1,4 +1,4 @@
-# [WIP] DoNotSend - hijacking the DNS protocol
+# DoNotSend - hijacking the DNS protocol
 
 For now, it works on **Linux only**.
 
@@ -13,7 +13,7 @@ Here it's used to send messages and retrieve other messages, instead of asking f
   * if it isn't installed alongside scapy:
     * libpcap
 * venv
-  * Sometimes the wheel module is needed as well
+  * Sometimes the `wheel` module is needed as well
 
 ```shell
 apt install python3-venv
@@ -36,15 +36,15 @@ apt install libpcap0.8-dev
 We can include arbitrary data in the hostname which the server then can interpret and execute/relay.
 Thus we put our data in the qname section of the query, encoded using base32, without the padding (we can easily recalculate it).
 
-Currently, it's just a WIP, it sends a single message "hello world" and get responses from the server which are displayed.
+The queries sent are TXT DNS queries, otherwise (because we answer with TXT DNS replies) the replies will get lost/deleted when transmitted by peers (yes you read correctly, Google can ask the DNS if it knows `crafted-domain.my_dns.domain.example.com`).
 
-### Running the client
-
-```shell
-cd src
-# needs to run as root because it is using port 53
-python3 client.py "hostname"
+```bash
+python3 client.py [my_dns.domain.example.com] "message here"
 ```
+
+If no message is given, `hello world` is sent.
+
+You can also use the `client.sh` version, relying only on `dig`, `base32` and `base64`.
 
 ## server
 
@@ -57,8 +57,22 @@ Then it replies through a DNS TXT reply, where the data is encoded as base64 wit
 ```shell
 cd src
 # needs to run as root because it is binding port 53
-python3 server.py
+python3 server.py [interface, for example eth0 on linux] [my_dns.domain.example.com]
 ```
+
+## Having other big DNS relay your queries and answers
+
+In a few steps I was able to configure my NS provider to set myself up as my own DNS, to get to reply to the weird domains I need to communicate.
+
+For this examples, let's say my server is named `example.com`.
+
+1. In my DNS Zone, I added a `NS` entry for `dns.example.com`, pointing to `dns.example.com.` (mind the final dot)
+1. Then I added a `A` entry for `dns.example.com`, pointing to `my server ip here`
+1. In the DNS servers configuration, I already had things like `ns1.provider.com`, I added myself as a DNS server: `dns.example.com`, pointing to `my server ip here`
+1. For the redirections, I added `dns.example.com` as a type `A`, pointing to `my server ip here`
+1. Then, just wait a bit (can be as long as 48 hours) and you're good to go
+
+Now I just have to tell my client scripts to use the domain `dns.example.com` to send messages to it and it works like a charm, even when asking Google about it!
 
 ## Documentation
 

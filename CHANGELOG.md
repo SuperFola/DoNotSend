@@ -1,11 +1,12 @@
 # Changelog
 
-## Unreleased changes
+## v0.0.2
 ### Added
 - converter.py, to encode/decode ascii in base 32 and base 64 flawlessly
 - packet.py to encapsulate a lot of dull work
 - threaded udp socket server binded on port 53 otherwise we have an ICMP type 3 error (port unreachable, because nothing is binded to it)
 - simple chat server, anonymizing the ip addresses, can receive commands to get the messages (/consult), otherwise just add the message to the queue
+- error catching on subdomains decoding errors
 
 ### Changed
 - now using subdomains of a main domain instead of the qname field, in case it's filtered

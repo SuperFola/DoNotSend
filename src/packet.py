@@ -19,7 +19,9 @@ class Packet:
             id=randint(0, 2 ** 16 - 1),
             rd=0,  # no recursion desired
             qr=DNSHeaders.QR.Query,
-            qd=DNSQR(qname=layer["dns"]["qname"], qtype=DNSHeaders.Type.HostAddr),
+            # requests must be of type TXT otherwise our answers (of type TXT)
+            # don't get transmitted if recursion occured
+            qd=DNSQR(qname=layer["dns"]["qname"], qtype=DNSHeaders.Type.Text),
         )
 
         return Packet(pkt, domain)
