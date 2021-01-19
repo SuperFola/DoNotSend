@@ -62,7 +62,7 @@ class Server:
                                 rrname=packet.qname,
                                 rdata=Content.encode(self.on_query(data, packet.src)),
                                 type=DNSAnswer.Type.Text,
-                                ttl=1024,
+                                ttl=60,  # a minute long
                             ),
                         ],
                     },

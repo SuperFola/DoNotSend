@@ -24,7 +24,6 @@ class Client:
 
     def send(self, message: str):
         crafted_domain = f"{Domain.encode(message)}.{self.domain}"
-        logger.debug("crafted domain: %s", crafted_domain)
 
         packet = Packet.build_query(
             {"dst": self.dns_server, "dns": {"qname": crafted_domain}}, self.domain,

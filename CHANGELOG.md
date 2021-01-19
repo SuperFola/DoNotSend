@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased changes
+
+### Added
+
+### Changed
+- answers TTL changed from 1024 (17 minutes ~) to 60 (1 minute)
+
+### Removed
+
 ## v0.0.2
 ### Added
 - converter.py, to encode/decode ascii in base 32 and base 64 flawlessly
@@ -18,8 +27,6 @@
 - random source port for UDP packet
 - the client can now get a message as command line parameter
 - fixing a bug on the decoders: they were adding padding when it shouldn't (payload size modulo 4 = 0)
-
-### Removed
 
 ## v0.0.1
 ### Added
