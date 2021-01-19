@@ -30,6 +30,7 @@ class Client:
         )
         answer = sr1(packet.packet, verbose=self.verb, timeout=1)
         if answer.haslayer(ICMP) or answer.haslayer(IPerror):
+            logger.debug(answer.show())
             logger.critical("Unreachable host or filtered port")
             return None
         return answer[DNS] if answer is not None else None

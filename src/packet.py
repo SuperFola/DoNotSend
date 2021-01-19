@@ -31,6 +31,7 @@ class Packet:
             qr=DNSHeaders.QR.Answer,
             ancount=len(layer["dns"]["messages"]),
             an=reduce(op.truediv, layer["dns"]["messages"]),
+            qd=layer["dns"]["question"],
         )
 
         return Packet(pkt, domain)
