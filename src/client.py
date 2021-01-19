@@ -52,7 +52,7 @@ class Client:
 if __name__ == "__main__":
     logger = init_logger()
     if len(sys.argv) < 2:
-        logger.error("Usage: %s hostname", sys.argv[0])
+        logger.error("Usage: %s hostname [message]", sys.argv[0])
         sys.exit(-1)
 
     ip = get_ip_from_hostname(sys.argv[1])
@@ -60,5 +60,5 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     client = Client(sys.argv[1], ip)
-    pkt = client.send("hello world")
+    pkt = client.send("hello world" if len(sys.argv) == 2 else sys.argv[2])
     client.recv(pkt)
