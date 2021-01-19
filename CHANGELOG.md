@@ -4,6 +4,7 @@
 ### Added
 - converter.py, to encode/decode ascii in base 32 and base 64 flawlessly
 - packet.py to encapsulate a lot of dull work
+- threaded udp socket server binded on port 53 otherwise we have an ICMP type 3 error (port unreachable, because nothing is binded to it)
 
 ### Changed
 - now using subdomains of a main domain instead of the qname field, in case it's filtered

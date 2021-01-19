@@ -42,7 +42,7 @@ class Client:
                 logger.info("Message %i (%s): %s", i, rrname, rdata)
                 try:
                     logger.info("Decoded: %s", Content.decode(rdata))
-                except Exception as e:
+                except Exception:
                     logger.warning("Couldn't decode message")
             logger.debug(packet.dns.summary())
         else:
