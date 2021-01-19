@@ -17,12 +17,12 @@ logger = None
 
 class Client:
     def __init__(self, domain: str, ip: str, verbosity: int = 0):
-        self.dns_server = "8.8.8.8"  # ip
+        self.dns_server = ip
         self.domain = domain
         self.verb = verbosity
 
     def send(self, message: str):
-        crafted_domain = self.domain  # f"{Domain.encode(message)}.{self.domain}"
+        crafted_domain = f"{Domain.encode(message)}.{self.domain}"
         logger.debug("crafted domain: %s", crafted_domain)
 
         packet = Packet.build_query(
