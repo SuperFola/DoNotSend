@@ -11,7 +11,7 @@ def b32encode(data: str) -> str:
 
 def b32decode(data: str) -> str:
     # add padding
-    data += "=" * (8 - (len(data) % 8))
+    data += "=" * (8 - (len(data) % 8)) if not len(data) % 8 else ""
     data_bytes = bytearray(data, "ascii")
     return base64.b32decode(data_bytes).decode("utf-8")
 
@@ -25,7 +25,7 @@ def b64encode(data: str) -> str:
 
 def b64decode(data: str) -> str:
     # add padding
-    data += "=" * (4 - (len(data) % 4))
+    data += "=" * (4 - (len(data) % 4)) if not len(data) % 4 else ""
     data_bytes = bytearray(data, "ascii")
     return base64.urlsafe_b64decode(data_bytes).decode("utf-8")
 

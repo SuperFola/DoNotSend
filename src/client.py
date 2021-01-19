@@ -14,6 +14,7 @@ from utils import DNSHeaders, init_logger, get_ip_from_hostname
 
 logger = None
 
+import base64
 
 class Client:
     def __init__(self, domain: str, ip: str, verbosity: int = 0):
