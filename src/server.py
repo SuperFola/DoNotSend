@@ -37,7 +37,8 @@ class Server:
         if packet.is_valid_dnsquery():
             self.logger.info("got a packet from %s:%i", packet.src, packet.sport)
 
-            subdomain = packet.subdomain_from_qname
+            # TEMP fix
+            subdomain = packet.subdomain_from_qname.split('.')[0]
             self.logger.debug("subdomain: %s", subdomain)
             data = Domain.decode(subdomain)
             self.logger.debug("decoded: %s", data)
