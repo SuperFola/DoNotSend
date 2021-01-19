@@ -2,6 +2,7 @@
 
 import sys
 import socket
+import threading
 
 from scapy.layers.dns import DNS, DNSQR, DNSRR
 from scapy.layers.inet import IP, UDP
@@ -69,6 +70,14 @@ class Server:
         )
 
 
+def socket_server(ip):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.bind((ip, 53))
+    while True:
+        s.recvfrom(1024)
+    s.close()
+
+
 if __name__ == "__main__":
     logger = init_logger()
     if len(sys.argv) < 3:
@@ -79,12 +88,8 @@ if __name__ == "__main__":
     if ip is None:
         sys.exit(-1)
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((self.host_ip, 53))
-    s.listen(5)
+    t = threading.Thread(target=socket_server, args=(ip, ))
+    t.join()
 
     server = Server(sys.argv[1], sys.argv[2], ip)
-    try:
-        server.run()
-    except KeyboardInterrupt:
-        s.close()
+    server.run()
