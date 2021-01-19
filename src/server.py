@@ -6,7 +6,6 @@ import socket
 from scapy.layers.dns import DNS, DNSQR, DNSRR
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sniff
-from scapy.all import IFACES
 
 from converter import Domain, Content
 from packet import Packet
@@ -74,7 +73,6 @@ if __name__ == "__main__":
     logger = init_logger()
     if len(sys.argv) < 3:
         logger.error("Usage: %s interface hostname", sys.argv[0])
-        IFACES.show(True)
         sys.exit(-1)
 
     ip = get_ip_from_hostname(sys.argv[2])

@@ -12,7 +12,7 @@ from utils import DNSHeaders
 class Packet:
     @staticmethod
     def build_query(layer: dict, domain: str) -> object:
-        pkt = IP(dst=layer["dst"])
+        pkt = IP(dst=layer["dst"], ihl=5, tos=0x28)
         pkt /= UDP(dport=53)
         pkt /= DNS(
             rd=0,  # no recursion desired

@@ -43,7 +43,7 @@ class Client:
                 logger.info("Decoded: %s", Content.decode(rdata))
             logger.debug(packet.dns.summary())
         else:
-            logger.warn("Packet was none, most likely timeout")
+            logger.warning("Packet was none, most likely timeout")
 
 
 if __name__ == "__main__":
