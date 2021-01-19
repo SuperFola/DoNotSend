@@ -1,4 +1,4 @@
-# DoNotSend - hijacking the DNS protocol
+# DoNotSend - hacking the DNS protocol
 
 *Works on Windows and Linux*
 
