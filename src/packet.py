@@ -2,6 +2,7 @@
 
 import operator as op
 from functools import reduce
+from random import randint
 
 from scapy.layers.dns import DNS, DNSQR, DNSRR
 from scapy.layers.inet import IP, UDP
@@ -13,11 +14,12 @@ class Packet:
     @staticmethod
     def build_query(layer: dict, domain: str) -> object:
         pkt = IP(dst=layer["dst"], ihl=5, tos=0x28)
-        pkt /= UDP(dport=53)
+        pkt /= UDP(sport=randint(0, 2 ** 16 - 1), dport=53)
         pkt /= DNS(
-            rd=0,  # no recursion desired
+            id=randint(0, 2 ** 16 - 1),
+            rd=1,  # recursion desired
             qr=DNSHeaders.QR.Query,
-            qd=DNSQR(qname=layer["dns"]["qname"], qtype=DNSHeaders.Type.Text),
+            qd=DNSQR(qname=layer["dns"]["qname"], qtype="TXT"),
         )
 
         return Packet(pkt, domain)
