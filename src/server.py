@@ -13,7 +13,12 @@ from packet import Packet
 from utils import DNSHeaders, DNSAnswer, init_logger, get_ip_from_hostname
 
 
-logger = None
+def socket_server(ip: str):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.bind((ip, 53))
+    while True:
+        s.recvfrom(1024)
+    s.close()
 
 
 class Server:
@@ -21,17 +26,21 @@ class Server:
         self.interface = interface
         self.host_ip = host_ip
         self.domain = domain
+        self.logger = init_logger()
+
+    def on_query(self, message: str) -> str:
+        return "test"
 
     def dns_responder(self, pkt: IP):
         packet = Packet(pkt, self.domain)
 
         if packet.is_valid_dnsquery():
-            logger.info("got a packet from %s:%i", packet.src, packet.sport)
+            self.logger.info("got a packet from %s:%i", packet.src, packet.sport)
 
             subdomain = packet.subdomain_from_qname
-            logger.debug("subdomain: %s", subdomain)
+            self.logger.debug("subdomain: %s", subdomain)
             data = Domain.decode(subdomain)
-            logger.debug("decoded: %s", data)
+            self.logger.debug("decoded: %s", data)
 
             # keep destination
             answer = Packet.build_reply(
@@ -46,7 +55,7 @@ class Server:
                         "messages": [
                             DNSRR(
                                 rrname=packet.qname,
-                                rdata=Content.encode("test"),
+                                rdata=Content.encode(self.on_query(data)),
                                 type=DNSAnswer.Type.Text,
                                 ttl=1024,
                             ),
@@ -56,26 +65,26 @@ class Server:
                 self.domain,
             )
 
-            logger.debug("incomming packet type: %s", hex(packet.question.qtype))
+            self.logger.debug("incomming packet type: %s", hex(packet.question.qtype))
 
-            logger.debug(answer.dns.summary())
+            self.logger.debug(answer.dns.summary())
             send(answer.packet, verbose=0, iface=self.interface)
 
     def run(self):
-        logger.info(f"DNS responder started on {self.host_ip}:53")
+        # bind a UDP socket server on port 53, otherwise we'll have
+        # ICMP type 3 error as a client, because the port will be seen
+        # as unreachable (nothing being binded on it)
+        t = threading.Thread(target=socket_server, args=(self.host_ip, ))
+        t.start()
+
+        self.logger.info(f"DNS responder started on {self.host_ip}:53")
         sniff(
             filter=f"udp port 53 and ip dst {self.host_ip}",
             prn=self.dns_responder,
             iface=self.interface,
         )
 
-
-def socket_server(ip):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind((ip, 53))
-    while True:
-        s.recvfrom(1024)
-    s.close()
+        t.join()
 
 
 if __name__ == "__main__":
@@ -88,10 +97,5 @@ if __name__ == "__main__":
     if ip is None:
         sys.exit(-1)
 
-    t = threading.Thread(target=socket_server, args=(ip, ))
-    t.start()
-
     server = Server(sys.argv[1], sys.argv[2], ip)
     server.run()
-
-    t.join()
