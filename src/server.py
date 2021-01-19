@@ -88,9 +88,8 @@ class Server:
 
 
 if __name__ == "__main__":
-    logger = init_logger()
     if len(sys.argv) < 3:
-        logger.error("Usage: %s interface hostname", sys.argv[0])
+        print("Usage: %s interface hostname" % sys.argv[0])
         sys.exit(-1)
 
     ip = get_ip_from_hostname(sys.argv[2])
