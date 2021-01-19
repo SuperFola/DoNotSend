@@ -23,6 +23,8 @@ class ChatServer(Server):
         self.users = {}
 
     def on_query(self, message: str, src_ip: str) -> str:
+        message = message.strip()
+
         if src_ip not in self.users:
             # associate each new ip with its user id
             self.users[src_ip] = str(len(self.users))
