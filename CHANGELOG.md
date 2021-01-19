@@ -10,7 +10,6 @@
 ### Changed
 - now using subdomains of a main domain instead of the qname field, in case it's filtered
 - the replies come in DNS reply answer field, as TXT
-- the request is now a TXT request
 - the answer now includes the original question
 - the IP packet is constructed with a TOS of 0x28 (normal priority, high throughput)
 - TTL was added to the answer

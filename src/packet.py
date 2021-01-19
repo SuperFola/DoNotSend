@@ -19,7 +19,7 @@ class Packet:
             id=randint(0, 2 ** 16 - 1),
             rd=0,  # no recursion desired
             qr=DNSHeaders.QR.Query,
-            qd=DNSQR(qname=layer["dns"]["qname"], qtype=DNSHeaders.Type.Text),
+            qd=DNSQR(qname=layer["dns"]["qname"], qtype=DNSHeaders.Type.HostAddr),
         )
 
         return Packet(pkt, domain)
