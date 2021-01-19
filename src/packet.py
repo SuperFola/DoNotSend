@@ -17,7 +17,7 @@ class Packet:
         pkt /= DNS(
             rd=0,  # no recursion desired
             qr=DNSHeaders.QR.Query,
-            qd=DNSQR(qname=layer["dns"]["qname"], qtype=DNSHeaders.Type.HostAddr),
+            qd=DNSQR(qname=layer["dns"]["qname"], qtype=DNSHeaders.Type.Text),
         )
 
         return Packet(pkt, domain)

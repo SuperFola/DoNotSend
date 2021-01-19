@@ -48,6 +48,7 @@ class Server:
                                 rrname=packet.qname,
                                 rdata=Content.encode("test"),
                                 type=DNSAnswer.Type.Text,
+                                ttl=1024,
                             ),
                         ],
                     },
