@@ -13,13 +13,13 @@ from utils import DNSHeaders
 class Packet:
     @staticmethod
     def build_query(layer: dict, domain: str) -> object:
-        pkt = IP(dst=layer["dst"], ihl=5, tos=0x28)
+        pkt = IP(dst=layer["dst"], tos=0x28)
         pkt /= UDP(sport=randint(0, 2 ** 16 - 1), dport=53)
         pkt /= DNS(
             id=randint(0, 2 ** 16 - 1),
-            rd=1,  # recursion desired
+            rd=0,  # no recursion desired
             qr=DNSHeaders.QR.Query,
-            qd=DNSQR(qname=layer["dns"]["qname"], qtype="TXT"),
+            qd=DNSQR(qname=layer["dns"]["qname"], qtype=DNSHeaders.Type.Text),
         )
 
         return Packet(pkt, domain)
