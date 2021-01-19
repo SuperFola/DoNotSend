@@ -1,6 +1,6 @@
 # DoNotSend - hijacking the DNS protocol
 
-For now, it works on **Linux only**.
+*Works on Windows and Linux*
 
 The DNS protocol is conventionally used to ask for the IP address of a given website.
 
