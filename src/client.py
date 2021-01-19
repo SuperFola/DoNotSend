@@ -17,12 +17,12 @@ logger = None
 
 class Client:
     def __init__(self, domain: str, ip: str, verbosity: int = 0):
-        self.dns_server = ip
+        self.dns_server = "8.8.8.8"  # ip
         self.domain = domain
         self.verb = verbosity
 
     def send(self, message: str):
-        crafted_domain = f"{Domain.encode(message)}.{self.domain}"
+        crafted_domain = self.domain  # f"{Domain.encode(message)}.{self.domain}"
         logger.debug("crafted domain: %s", crafted_domain)
 
         packet = Packet.build_query(
@@ -40,7 +40,10 @@ class Client:
             packet = Packet(pkt, self.domain)
             for i, (rrname, rdata) in enumerate(packet.answers):
                 logger.info("Message %i (%s): %s", i, rrname, rdata)
-                logger.info("Decoded: %s", Content.decode(rdata))
+                try:
+                    logger.info("Decoded: %s", Content.decode(rdata))
+                except Exception as e:
+                    logger.warning("Couldn't decode message")
             logger.debug(packet.dns.summary())
         else:
             logger.warning("Packet was none, most likely timeout")

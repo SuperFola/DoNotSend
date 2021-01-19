@@ -79,5 +79,12 @@ if __name__ == "__main__":
     if ip is None:
         sys.exit(-1)
 
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((self.host_ip, 53))
+    s.listen(5)
+
     server = Server(sys.argv[1], sys.argv[2], ip)
-    server.run()
+    try:
+        server.run()
+    except KeyboardInterrupt:
+        s.close()
