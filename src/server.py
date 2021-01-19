@@ -89,7 +89,9 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     t = threading.Thread(target=socket_server, args=(ip, ))
-    t.join()
+    t.start()
 
     server = Server(sys.argv[1], sys.argv[2], ip)
     server.run()
+
+    t.join()
