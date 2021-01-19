@@ -28,7 +28,7 @@ class Server:
         self.domain = domain
         self.logger = init_logger()
 
-    def on_query(self, message: str) -> str:
+    def on_query(self, message: str, src_ip: str) -> str:
         return "test"
 
     def dns_responder(self, pkt: IP):
@@ -55,7 +55,7 @@ class Server:
                         "messages": [
                             DNSRR(
                                 rrname=packet.qname,
-                                rdata=Content.encode(self.on_query(data)),
+                                rdata=Content.encode(self.on_query(data, packet.src)),
                                 type=DNSAnswer.Type.Text,
                                 ttl=1024,
                             ),
