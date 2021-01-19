@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import sys
 import time
 
 from server import Server
+from utils import get_ip_from_hostname
 
 
 class Message:
