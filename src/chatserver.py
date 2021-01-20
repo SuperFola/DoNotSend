@@ -2,6 +2,7 @@
 
 import sys
 import time
+from typing import List
 
 from server import Server
 from utils import get_ip_from_hostname
@@ -16,13 +17,13 @@ class Message:
 
 
 class ChatServer(Server):
-    def __init__(self, interface: str, domain: str, host_ip: str):
-        super().__init__(interface, domain, host_ip)
+    def __init__(self, *args):
+        super().__init__(*args)
 
         self.messages = []
         self.users = {}
 
-    def on_query(self, message: str, src_ip: str) -> str:
+    def on_query(self, message: str, src_ip: str, domains: List[str]) -> str:
         message = message.strip()
 
         if src_ip not in self.users:
@@ -37,7 +38,8 @@ class ChatServer(Server):
         elif message == "/consult":
             # get the user unread messages list
             history = []
-            for msg in self.messages:
+            # get the last 5 messages in reverse order
+            for msg in self.messages[:-6:-1]:
                 if self.users[src_ip] not in msg.seen_by:
                     history.append(msg)
                     # mark the message as seen
@@ -45,7 +47,8 @@ class ChatServer(Server):
 
             # create the unread message list
             output = ""
-            for msg in history:
+            # append message in ascending order
+            for msg in history[::-1]:
                 output += f"@{msg.author} [{msg.timestamp}]: {msg.content}\n"
             return output
         return "/error"

@@ -66,10 +66,8 @@ In a few steps I was able to configure my NS provider to set myself up as my own
 
 For this examples, let's say my server is named `example.com`.
 
-1. In my DNS Zone, I added a `NS` entry for `dns.example.com`, pointing to `dns.example.com.` (mind the final dot)
-1. Then I added a `A` entry for `dns.example.com`, pointing to `my server ip here`
+1. I added a `A` entry for `dns.example.com`, pointing to `my server ip here`
 1. In the DNS servers configuration, I already had things like `ns1.provider.com`, I added myself as a DNS server: `dns.example.com`, pointing to `my server ip here`
-1. For the redirections, I added `dns.example.com` as a type `A`, pointing to `my server ip here`
 1. Then, just wait a bit (can be as long as 48 hours) and you're good to go
 
 Now I just have to tell my client scripts to use the domain `dns.example.com` to send messages to it and it works like a charm, even when asking Google about it!

@@ -53,6 +53,20 @@ class DNSHeaders:
         Text = 0x0010
         MailServer = 0x000F
 
+        @staticmethod
+        def to_str(qtype: int):
+            if qtype == DNSHeaders.Type.HostAddr:
+                return "A"
+            elif qtype == DNSHeaders.Type.NameServer:
+                return "NS"
+            elif qtype == DNSHeaders.Type.CName:
+                return "CNAME"
+            elif qtype == DNSHeaders.Type.Text:
+                return "TXT"
+            elif qtype == DNSHeaders.Type.MailServer:
+                return "MX"
+            return "???"
+
     class RCode:
         NoErr = 0
         FormatErr = 1

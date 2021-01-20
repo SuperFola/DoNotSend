@@ -1,0 +1,11 @@
+[server]
+interface=
+domain=
+host_ip=
+
+[packets]
+ttl=60
+
+[domain.site.com]
+ip=
+ttl=3600
