@@ -67,7 +67,7 @@ class Server:
             rrname=qname,
             rdata=Content.encode(content),
             type=DNSAnswer.Type.Text,
-            ttl=self.config["packets"]["ttl"] if self.config else 60,
+            ttl=int(self.config["packets"]["ttl"]) if self.config else 60,
         )
 
     def _make_txt(self, packet: Packet) -> Packet:
@@ -77,6 +77,7 @@ class Server:
             data = Domain.decode(subdomain)
         except binascii.Error:
             # couldn't decode, drop the packet and do nothing
+            logger.debug("Couldn't decode subdomain in %s", packet.qname)
             return
 
         return Packet.build_reply(
@@ -118,7 +119,7 @@ class Server:
                                 rrname=packet.qname,
                                 rdata=self.config[packet.qname]["ip"],
                                 type=DNSAnswer.Type.HostAddr,
-                                ttl=self.config[packet.qname]["ttl"],
+                                ttl=int(self.config[packet.qname]["ttl"]),
                             ),
                         ],
                     },
@@ -140,9 +141,9 @@ class Server:
 
         # reject every packet which isn't a DNS TXT query
         if packet.is_valid_dnsquery("A"):
-            answer = self._make_txt(packet)
-        elif packet.is_valid_dnsquery("TXT"):
             answer = self._make_a(packet)
+        elif packet.is_valid_dnsquery("TXT"):
+            answer = self._make_txt(packet)
 
         if answer is not None:
             send(answer.packet, verbose=0, iface=self.interface)
