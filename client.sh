@@ -32,7 +32,7 @@ case "$length" in
     ;;
 esac
 # decode
-decoded=$(echo $message | base64 -d)
+decoded=$(echo "$message" | base64 -d)
 
 FinalDate=$(date -u +"%s.%N")
 elapsed=$(date -u -d "0 $FinalDate sec - $StartDate sec" +"%S.%N")
