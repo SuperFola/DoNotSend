@@ -105,7 +105,8 @@ class Server:
 
         # if we receive a DNS A query for a subdomain, answer it with an ip from
         # the configuration file
-        if packet.qname in self.config.sections():
+        qname = packet.qname[:-1]  # remove final '.'
+        if qname in self.config.sections():
             return Packet.build_reply(
                 {
                     "src": self.host_ip,
@@ -117,9 +118,9 @@ class Server:
                         "messages": [
                             DNSRR(
                                 rrname=packet.qname,
-                                rdata=self.config[packet.qname]["ip"],
+                                rdata=self.config[qname]["ip"],
                                 type=DNSAnswer.Type.HostAddr,
-                                ttl=int(self.config[packet.qname]["ttl"]),
+                                ttl=int(self.config[qname]["ttl"]),
                             ),
                         ],
                     },
@@ -139,8 +140,8 @@ class Server:
             packet.qname
         )
 
-        # reject every packet which isn't a DNS TXT query
-        if packet.is_valid_dnsquery("A"):
+        # reject every packet which isn't a DNS A/TXT query
+        if packet.is_valid_dnsquery("A", self.config["server"]["root"] if self.config else ""):
             answer = self._make_a(packet)
         elif packet.is_valid_dnsquery("TXT"):
             answer = self._make_txt(packet)

@@ -85,9 +85,9 @@ class Packet:
         self._pkt = pkt
         self._domain = domain
 
-    def is_valid_dnsquery(self, qtype: str) -> bool:
+    def is_valid_dnsquery(self, qtype: str, domain: str="") -> bool:
         def check_qname(q: str) -> str:
-            return q.endswith(f"{self._domain}.")
+            return q.endswith(f"{domain if domain else self._domain}.")
 
         return (
             DNS in self._pkt
