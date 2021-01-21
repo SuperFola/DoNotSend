@@ -27,7 +27,7 @@ class ChatServer:
             self.users[src_ip] = str(len(self.users))
 
         # check for commands
-        if len(message) > 1 and message[0] != '/':
+        if len(message) > 1 and message[0] != "/":
             self.messages.append(Message(self.users[src_ip], message))
             self.messages[-1].seen_by.append(self.users[src_ip])
             return "/ok"

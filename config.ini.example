@@ -1,11 +1,16 @@
 [server]
 interface=
-domain=
+root=example.com
+domain=dns.example.com
 host_ip=
 
 [packets]
-ttl=60
+ttl=1
 
-[domain.site.com]
+[example.com]
+ip=
+ttl=3600
+
+[nice.example.com]
 ip=
 ttl=3600

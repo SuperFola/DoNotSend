@@ -10,7 +10,9 @@ from scapy.layers.inet import IP, UDP
 from utils import DNSHeaders
 
 
-def build_tos(precedence: int, lowdelay: bool, throughput: bool, reliability: bool, lowcost: bool) -> int:
+def build_tos(
+    precedence: int, lowdelay: bool, throughput: bool, reliability: bool, lowcost: bool
+) -> int:
     """Building IP Type of Service value
 
     Args:
@@ -28,8 +30,13 @@ def build_tos(precedence: int, lowdelay: bool, throughput: bool, reliability: bo
     Returns:
         int: type of service as describe in the RFC 1349 and 791
     """
-    return (lowcost << 1) + (reliability << 2) + (throughput << 3) + \
-        (lowdelay << 4) + (max(min(precedence, 0b111), 0b000) << 5)
+    return (
+        (lowcost << 1)
+        + (reliability << 2)
+        + (throughput << 3)
+        + (lowdelay << 4)
+        + (max(min(precedence, 0b111), 0b000) << 5)
+    )
 
 
 class Packet:
@@ -85,7 +92,7 @@ class Packet:
         self._pkt = pkt
         self._domain = domain
 
-    def is_valid_dnsquery(self, qtype: str, domain: str="") -> bool:
+    def is_valid_dnsquery(self, qtype: str, domain: str = "") -> bool:
         def check_qname(q: str) -> str:
             return q.endswith(f"{domain if domain else self._domain}.")
 

@@ -37,9 +37,9 @@ class Server:
         config.read(filename)
 
         return Server(
-            config['server']['interface'],
-            config['server']['domain'],
-            config['server']['host_ip'],
+            config["server"]["interface"],
+            config["server"]["domain"],
+            config["server"]["host_ip"],
             config
         )
 
@@ -72,7 +72,7 @@ class Server:
 
     def _make_txt(self, packet: Packet) -> Packet:
         try:
-            subdomain, *domains = packet.subdomain_from_qname.split('.')
+            subdomain, *domains = packet.subdomain_from_qname.split(".")
             domains = domains[::-1]
             data = Domain.decode(subdomain)
         except binascii.Error:
@@ -90,8 +90,7 @@ class Server:
                     "question": packet.question,
                     "messages": [
                         self._make_message(
-                            packet.qname,
-                            self.on_query(data, packet.src, domains)
+                            packet.qname, self.on_query(data, packet.src, domains)
                         ),
                     ],
                 },
@@ -137,11 +136,13 @@ class Server:
             dnstypes[packet.question.qtype],
             packet.src,
             packet.sport,
-            packet.qname
+            packet.qname,
         )
 
         # reject every packet which isn't a DNS A/TXT query
-        if packet.is_valid_dnsquery("A", self.config["server"]["root"] if self.config else ""):
+        if packet.is_valid_dnsquery(
+            "A", self.config["server"]["root"] if self.config else ""
+        ):
             answer = self._make_a(packet)
         elif packet.is_valid_dnsquery("TXT"):
             answer = self._make_txt(packet)
@@ -153,7 +154,7 @@ class Server:
         # bind a UDP socket server on port 53, otherwise we'll have
         # ICMP type 3 error as a client, because the port will be seen
         # as unreachable (nothing being binded on it)
-        t = threading.Thread(target=socket_server, args=(self.host_ip, ))
+        t = threading.Thread(target=socket_server, args=(self.host_ip,))
         t.start()
 
         self.logger.info(f"DNS sniffer started on {self.host_ip}:53")
