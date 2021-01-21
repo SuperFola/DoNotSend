@@ -3,4 +3,4 @@ __pycache__/
 .vscode/
 venv/
 
-server.ini
+*.ini

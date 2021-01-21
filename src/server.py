@@ -132,7 +132,7 @@ class Server:
 
         self.logger.info(
             "[DNS %s] Source %s:%i - on %s",
-            DNSHeaders.Type.to_str(packet.question.type),
+            DNSHeaders.Type.to_str(packet.question.qtype & 0b11),
             packet.src,
             packet.sport,
             packet.qname
@@ -165,7 +165,8 @@ class Server:
 
 
 def main(**subservers):
-    if len(sys.argv) != 2 or len(sys.argv) != 3:
+    if len(sys.argv) != 2 and len(sys.argv) != 3:
+        print(sys.argv)
         print("Usage: %s interface hostname" % sys.argv[0])
         print("       %s config_file.ini" % sys.argv[0])
         sys.exit(-1)

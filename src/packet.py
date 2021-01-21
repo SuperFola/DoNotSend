@@ -93,7 +93,7 @@ class Packet:
             DNS in self._pkt
             and self._pkt[DNS].opcode == DNSHeaders.OpCode.StdQuery
             and self._pkt[DNS].qr == DNSHeaders.QR.Query
-            and self._pkt[DNSQR].type == qtype
+            and self._pkt[DNSQR].qtype == qtype
             and check_qname(self._pkt[DNSQR].qname.decode("utf-8"))
             and self._pkt[DNS].ancount == 0
         )
