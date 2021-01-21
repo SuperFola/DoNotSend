@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import binascii
+import os
 import socket
 import sys
 import threading
@@ -29,6 +30,9 @@ def socket_server(ip: str):
 class Server:
     @staticmethod
     def from_file(filename: str):
+        if not os.path.exists(filename):
+            raise FileNotFoundError(filename)
+
         config = ConfigParser()
         config.read(filename)
 
@@ -45,9 +49,17 @@ class Server:
         self.domain = domain
         self.config = config
 
+        # subdomain => function(msg, ip, domains)
+        self.subservers = {}
+
         self.logger = init_logger()
 
+    def register(self, **subservers):
+        self.subservers.update(subservers)
+
     def on_query(self, message: str, src_ip: str, domains: List[str]) -> str:
+        if domains and self.subservers.get(domains[0]):
+            return self.subservers[domains[0]](message, src_ip, domains)
         return "test"
 
     def _make_message(self, qname: str, content: str) -> DNSRR:
@@ -61,6 +73,7 @@ class Server:
     def _make_txt(self, packet: Packet) -> Packet:
         try:
             subdomain, *domains = packet.subdomain_from_qname.split('.')
+            domains = domains[::-1]
             data = Domain.decode(subdomain)
         except binascii.Error:
             # couldn't decode, drop the packet and do nothing
@@ -151,11 +164,13 @@ class Server:
         t.join()
 
 
-if __name__ == "__main__":
+def main(**subservers):
     if len(sys.argv) != 2 or len(sys.argv) != 3:
         print("Usage: %s interface hostname" % sys.argv[0])
         print("       %s config_file.ini" % sys.argv[0])
         sys.exit(-1)
+
+    server = None
 
     if len(sys.argv) == 3:
         ip = get_ip_from_hostname(sys.argv[2])
@@ -164,7 +179,13 @@ if __name__ == "__main__":
             sys.exit(-1)
 
         server = Server(sys.argv[1], sys.argv[2], ip)
-        server.run()
     elif len(sys.argv) == 2:
         server = Server.from_file(sys.argv[1])
+
+    if server is not None:
+        server.register(**subservers)
         server.run()
+
+
+if __name__ == "__main__":
+    main()

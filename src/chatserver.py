@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-import sys
 import time
 from typing import List
 
-from server import Server
-from utils import get_ip_from_hostname
+from server import main
 
 
 class Message:
@@ -16,14 +14,12 @@ class Message:
         self.seen_by = []
 
 
-class ChatServer(Server):
-    def __init__(self, *args):
-        super().__init__(*args)
-
+class ChatServer:
+    def __init__(self):
         self.messages = []
         self.users = {}
 
-    def on_query(self, message: str, src_ip: str, domains: List[str]) -> str:
+    def __call__(self, message: str, src_ip: str, domains: List[str]) -> str:
         message = message.strip()
 
         if src_ip not in self.users:
@@ -55,13 +51,4 @@ class ChatServer(Server):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: %s interface hostname" % sys.argv[0])
-        sys.exit(-1)
-
-    ip = get_ip_from_hostname(sys.argv[2])
-    if ip is None:
-        sys.exit(-1)
-
-    server = ChatServer(sys.argv[1], sys.argv[2], ip)
-    server.run()
+    main(chat=ChatServer())
