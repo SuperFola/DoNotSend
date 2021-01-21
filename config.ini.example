@@ -1,0 +1,16 @@
+[server]
+interface=
+root=example.com
+domain=dns.example.com
+host_ip=
+
+[packets]
+ttl=1
+
+[example.com]
+ip=
+ttl=3600
+
+[nice.example.com]
+ip=
+ttl=3600

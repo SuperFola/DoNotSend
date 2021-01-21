@@ -2,3 +2,5 @@ __pycache__/
 *.py[ouc]
 .vscode/
 venv/
+
+*.ini
