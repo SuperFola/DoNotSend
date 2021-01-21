@@ -40,7 +40,7 @@ class Server:
             config["server"]["interface"],
             config["server"]["domain"],
             config["server"]["host_ip"],
-            config
+            config,
         )
 
     def __init__(self, iface: str, domain: str, ip: str, config: ConfigParser = None):
