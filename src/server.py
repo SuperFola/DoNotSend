@@ -8,7 +8,7 @@ import threading
 from configparser import ConfigParser
 from typing import List
 
-from scapy.layers.dns import DNS, DNSQR, DNSRR
+from scapy.layers.dns import DNS, DNSQR, DNSRR, dnstypes
 from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sniff
 
@@ -132,16 +132,16 @@ class Server:
 
         self.logger.info(
             "[DNS %s] Source %s:%i - on %s",
-            DNSHeaders.Type.to_str(packet.question.type),
+            dnstypes[packet.question.qtype],
             packet.src,
             packet.sport,
             packet.qname
         )
 
         # reject every packet which isn't a DNS TXT query
-        if packet.is_valid_dnsquery(DNSHeaders.Type.Text):
+        if packet.is_valid_dnsquery("A"):
             answer = self._make_txt(packet)
-        elif packet.is_valid_dnsquery(DNSHeaders.Type.HostAddr):
+        elif packet.is_valid_dnsquery("TXT"):
             answer = self._make_a(packet)
 
         if answer is not None:

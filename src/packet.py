@@ -4,7 +4,7 @@ import operator as op
 from functools import reduce
 from random import randint
 
-from scapy.layers.dns import DNS, DNSQR, DNSRR
+from scapy.layers.dns import DNS, DNSQR, DNSRR, dnstypes
 from scapy.layers.inet import IP, UDP
 
 from utils import DNSHeaders
@@ -85,7 +85,7 @@ class Packet:
         self._pkt = pkt
         self._domain = domain
 
-    def is_valid_dnsquery(self, qtype: int) -> bool:
+    def is_valid_dnsquery(self, qtype: str) -> bool:
         def check_qname(q: str) -> str:
             return q[len(q) - len(self._domain) - 2: len(q) - 2]
 
@@ -93,7 +93,7 @@ class Packet:
             DNS in self._pkt
             and self._pkt[DNS].opcode == DNSHeaders.OpCode.StdQuery
             and self._pkt[DNS].qr == DNSHeaders.QR.Query
-            and self._pkt[DNSQR].type == qtype
+            and dnstypes[self._pkt[DNSQR].qtype] == qtype
             and check_qname(self._pkt[DNSQR].qname.decode("utf-8"))
             and self._pkt[DNS].ancount == 0
         )
