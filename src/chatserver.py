@@ -38,8 +38,8 @@ class Message:
 
 
 class User:
-    def __init__(self, key: str, ip: str):
-        self.key = key
+    def __init__(self, name: str, ip: str):
+        self.name = name
         self.ip = ip
         self.created_at = time.time()
 
@@ -104,11 +104,13 @@ class ChatServer:
                 self.messages = self.messages[-int(MESSAGE_LIMIT / 1000 + 1):]
 
             usertag, *data = msg.split(' ')
+            # remove the @
+            usertag = usertag[1:]
             if usertag not in self.users:
                 return ERROR_UNKNOWN_USERTAG
             else:
                 self.messages.append(
-                    Message(usertag, " ".join(data))
+                    Message(self.users[usertag].name, " ".join(data))
                 )
                 return "OK."
         else:
