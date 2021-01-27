@@ -2,9 +2,11 @@
 
 *Works on Windows and Linux*
 
-The DNS protocol is conventionally used to ask for the IP address of a given website.
+The DNS protocol is conventionally used to ask for the IP address of a given website. Here it's used to send messages and retrieve other messages, instead of asking for a website IP address and retrieving its IP address.
 
-Here it's used to send messages and retrieve other messages, instead of asking for a website IP address and retrieving its IP address.
+## Disclaimer
+
+This tool can be used to send messages by exploiting a flaw in the DNS protocol, but it could be used (as someone pointed out in [the reddit thread](https://www.reddit.com/r/Python/comments/l0ubhs/hacking_the_dns_protocol_to_use_it_as_a_messaging/)) to exfiltrate data from a network. I'm **not responsible for any misuse of the project**. Also note that it's most likely that your ISP is logging your DNS queries, thus it's not a 100% anonymous.
 
 ## Setup
 
@@ -25,8 +27,10 @@ pip3 install scapy
 pip3 uninstall scapy && pip3 install wheel && pip3 install scapy
 
 cd src
-# run as admin to check everything is fine
+# nota: run as admin because it's binding on + sniffing port 53:
 python3 server.py "interface" "host name"
+# or you can start it with a configuration file:
+python3 server.py config.ini
 # if it complains about libpcap not installed, then:
 apt install libpcap0.8-dev
 ```
@@ -44,7 +48,7 @@ python3 client.py [my_dns.domain.example.com] "message here"
 
 If no message is given, `hello world` is sent.
 
-You can also use the `client.sh` version, relying only on `dig`, `base32` and `base64`.
+You can also use the `client.sh` version, relying only on `dig`, `base32` and `base64`, instead of using `scapy`.
 
 ## server
 
@@ -67,7 +71,7 @@ In a few steps I was able to configure my NS provider to set myself up as my own
 For this examples, let's say my server is named `example.com`.
 
 1. I added a `A` entry for `dns.example.com`, pointing to `my server ip here`
-1. In the DNS servers configuration, I already had things like `ns1.provider.com`, I added myself as a DNS server: `dns.example.com`, pointing to `my server ip here`
+1. In the DNS servers configuration, I already had `ns1.provider.com`, I added myself as a DNS server: `dns.example.com`, pointing to `my server ip here`
 1. Then, just wait a bit (can be as long as 48 hours) and you're good to go
 
 Now I just have to tell my client scripts to use the domain `dns.example.com` to send messages to it and it works like a charm, even when asking Google about it!

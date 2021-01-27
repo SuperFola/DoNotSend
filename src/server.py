@@ -37,10 +37,10 @@ class Server:
         config.read(filename)
 
         return Server(
-            config['server']['interface'],
-            config['server']['domain'],
-            config['server']['host_ip'],
-            config
+            config["server"]["interface"],
+            config["server"]["domain"],
+            config["server"]["host_ip"],
+            config,
         )
 
     def __init__(self, iface: str, domain: str, ip: str, config: ConfigParser = None):
@@ -67,16 +67,17 @@ class Server:
             rrname=qname,
             rdata=Content.encode(content),
             type=DNSAnswer.Type.Text,
-            ttl=self.config["packets"]["ttl"] if self.config else 60,
+            ttl=int(self.config["packets"]["ttl"]) if self.config else 60,
         )
 
     def _make_txt(self, packet: Packet) -> Packet:
         try:
-            subdomain, *domains = packet.subdomain_from_qname.split('.')
+            subdomain, *domains = packet.subdomain_from_qname.split(".")
             domains = domains[::-1]
             data = Domain.decode(subdomain)
         except binascii.Error:
             # couldn't decode, drop the packet and do nothing
+            logger.debug("Couldn't decode subdomain in %s", packet.qname)
             return
 
         return Packet.build_reply(
@@ -89,8 +90,7 @@ class Server:
                     "question": packet.question,
                     "messages": [
                         self._make_message(
-                            packet.qname,
-                            self.on_query(data, packet.src, domains)
+                            packet.qname, self.on_query(data, packet.src, domains)
                         ),
                     ],
                 },
@@ -104,7 +104,8 @@ class Server:
 
         # if we receive a DNS A query for a subdomain, answer it with an ip from
         # the configuration file
-        if packet.qname in self.config.sections():
+        qname = packet.qname[:-1]  # remove final '.'
+        if qname in self.config.sections():
             return Packet.build_reply(
                 {
                     "src": self.host_ip,
@@ -116,9 +117,9 @@ class Server:
                         "messages": [
                             DNSRR(
                                 rrname=packet.qname,
-                                rdata=self.config[packet.qname]["ip"],
+                                rdata=self.config[qname]["ip"],
                                 type=DNSAnswer.Type.HostAddr,
-                                ttl=self.config[packet.qname]["ttl"],
+                                ttl=int(self.config[qname]["ttl"]),
                             ),
                         ],
                     },
@@ -135,14 +136,16 @@ class Server:
             dnstypes[packet.question.qtype],
             packet.src,
             packet.sport,
-            packet.qname
+            packet.qname,
         )
 
-        # reject every packet which isn't a DNS TXT query
-        if packet.is_valid_dnsquery("A"):
-            answer = self._make_txt(packet)
-        elif packet.is_valid_dnsquery("TXT"):
+        # reject every packet which isn't a DNS A/TXT query
+        if packet.is_valid_dnsquery(
+            "A", self.config["server"]["root"] if self.config else ""
+        ):
             answer = self._make_a(packet)
+        elif packet.is_valid_dnsquery("TXT"):
+            answer = self._make_txt(packet)
 
         if answer is not None:
             send(answer.packet, verbose=0, iface=self.interface)
@@ -151,7 +154,7 @@ class Server:
         # bind a UDP socket server on port 53, otherwise we'll have
         # ICMP type 3 error as a client, because the port will be seen
         # as unreachable (nothing being binded on it)
-        t = threading.Thread(target=socket_server, args=(self.host_ip, ))
+        t = threading.Thread(target=socket_server, args=(self.host_ip,))
         t.start()
 
         self.logger.info(f"DNS sniffer started on {self.host_ip}:53")
@@ -165,7 +168,8 @@ class Server:
 
 
 def main(**subservers):
-    if len(sys.argv) != 2 or len(sys.argv) != 3:
+    if len(sys.argv) != 2 and len(sys.argv) != 3:
+        print(sys.argv)
         print("Usage: %s interface hostname" % sys.argv[0])
         print("       %s config_file.ini" % sys.argv[0])
         sys.exit(-1)
