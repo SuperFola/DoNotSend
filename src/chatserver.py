@@ -8,6 +8,7 @@ from typing import List, Union
 from server import main
 
 
+MESSAGE_LIMIT = 10000
 USER_LIMIT = 1000
 MAX_MESSAGES_AT_ONCE = 25
 
@@ -99,6 +100,9 @@ class ChatServer:
             else:
                 return "ERROR Unknown command."
         elif msg.startswith("@"):
+            if len(self.messages) >= MESSAGE_LIMIT:
+                self.messages = self.messages[-int(MESSAGE_LIMIT / 1000 + 1):]
+
             usertag, *data = msg.split(' ')
             if usertag not in self.users:
                 return ERROR_UNKNOWN_USERTAG
