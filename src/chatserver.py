@@ -26,6 +26,7 @@ This mecanism exists to prevent the demo server from
 out of memory errors.
 Please try again later."""
 
+
 class Message:
     def __init__(self, author: str, content: str):
         self.author = author
@@ -89,7 +90,7 @@ class ChatServer:
         msg = msg.strip()
 
         if msg.startswith("/"):
-            cmd, *data = msg.split(' ')
+            cmd, *data = msg.split(" ")
             if cmd == "/register":
                 result = self.register_user(data, ip)
                 if not result:
@@ -101,7 +102,7 @@ class ChatServer:
                 return "ERROR Unknown command."
         elif msg.startswith("@"):
             if len(self.messages) >= MESSAGE_LIMIT:
-                self.messages = self.messages[-int(MESSAGE_LIMIT / 1000 + 1):]
+                self.messages = self.messages[-int(MESSAGE_LIMIT / 1000 + 1) :]
 
             usertag, *data = msg.split(' ')
             # remove the @
@@ -109,9 +110,7 @@ class ChatServer:
             if usertag not in self.users:
                 return ERROR_UNKNOWN_USERTAG
             else:
-                self.messages.append(
-                    Message(self.users[usertag].name, " ".join(data))
-                )
+                self.messages.append(Message(self.users[usertag].name, " ".join(data)))
                 return "OK."
         else:
             return ERROR_NOT_REGISTERED
