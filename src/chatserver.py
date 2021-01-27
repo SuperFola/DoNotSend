@@ -104,7 +104,7 @@ class ChatServer:
             if len(self.messages) >= MESSAGE_LIMIT:
                 self.messages = self.messages[-int(MESSAGE_LIMIT / 1000 + 1) :]
 
-            usertag, *data = msg.split(' ')
+            usertag, *data = msg.split(" ")
             # remove the @
             usertag = usertag[1:]
             if usertag not in self.users:
