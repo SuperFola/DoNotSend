@@ -45,7 +45,7 @@ class User:
 
     @staticmethod
     def generate_usertag(word: str) -> str:
-        return f"{word}{secrets.randbits(8 * 16)}"
+        return f"{word}{secrets.randbits(8 * 4)}"
 
 
 class ChatServer:
