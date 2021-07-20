@@ -1,13 +1,13 @@
 # Changelog
 
-## Unreleased changes
+## v0.0.4
 
 ### Added
+- different users with the same tag (when registering) are now different in the message log
+- possibility to log only a specific kind of DNS requests (on the server, through the configuration file)
 
 ### Changed
 - answers TTL changed from 1024 (17 minutes ~) to 60 (1 minute)
-
-### Removed
 
 ## v0.0.2
 ### Added
