@@ -8,13 +8,13 @@ import threading
 from configparser import ConfigParser
 from typing import List
 
-from scapy.layers.dns import DNS, DNSQR, DNSRR, dnstypes
-from scapy.layers.inet import IP, UDP
+from scapy.layers.dns import DNSRR, dnstypes
+from scapy.layers.inet import IP
 from scapy.sendrecv import send, sniff
 
 from converter import Content, Domain
 from packet import Packet
-from utils import DNSAnswer, DNSHeaders, get_ip_from_hostname, init_logger
+from utils import DNSAnswer, get_ip_from_hostname, init_logger
 
 
 def socket_server(ip: str):
@@ -77,7 +77,7 @@ class Server:
             data = Domain.decode(subdomain)
         except binascii.Error:
             # couldn't decode, drop the packet and do nothing
-            logger.debug("Couldn't decode subdomain in %s", packet.qname)
+            self.logger.debug("Couldn't decode subdomain in %s", packet.qname)
             return
 
         return Packet.build_reply(
