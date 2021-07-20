@@ -39,14 +39,19 @@ class Message:
 
 
 class User:
-    def __init__(self, name: str, ip: str):
-        self.name = name
+    def __init__(self, name: str, ip: str, suffix: Union[int, str] = ""):
+        self.tag = name
+        self.suffix = suffix
         self.ip = ip
         self.created_at = time.time()
 
+    @property
+    def name(self):
+        return f"{self.tag}{self.suffix}"
+
     @staticmethod
     def generate_usertag(word: str) -> str:
-        return f"{word}{secrets.randbits(8 * 4)}"
+        return f"{word}{secrets.randbits(8 * 2)}"
 
 
 class ChatServer:
@@ -58,7 +63,10 @@ class ChatServer:
         if USER_LIMIT > 0 and len(self.users) < USER_LIMIT:
             word, *_ = content
             usertag = User.generate_usertag(word)
-            self.users[usertag] = User(word, ip)
+            already_existing = len(
+                [u for u in self.users.values() if u.tag == word]
+            )
+            self.users[usertag] = User(word, ip, already_existing or "")
             return f"Registered as {usertag}."
         return False  # avoid having too many users for now
 
