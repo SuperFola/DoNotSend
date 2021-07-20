@@ -131,13 +131,17 @@ class Server:
         packet = Packet(pkt, self.domain)
         answer = None
 
-        self.logger.info(
-            "[DNS %s] Source %s:%i - on %s",
-            dnstypes[packet.question.qtype],
-            packet.src,
-            packet.sport,
-            packet.qname,
-        )
+        request_name = dnstypes[packet.question.qtype]
+
+        if self.config["server"]["log"] == "*" or \
+                self.config["server"]["log"] == request_name:
+            self.logger.info(
+                "[DNS %s] Source %s:%i - on %s",
+                request_name,
+                packet.src,
+                packet.sport,
+                packet.qname,
+            )
 
         # reject every packet which isn't a DNS A/TXT query
         if packet.is_valid_dnsquery(

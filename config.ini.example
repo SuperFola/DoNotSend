@@ -3,6 +3,7 @@ interface=
 root=example.com
 domain=dns.example.com
 host_ip=
+log=* # or the DNS request type, eg TXT
 
 [packets]
 ttl=1
