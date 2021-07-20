@@ -12,18 +12,17 @@ MESSAGE_LIMIT = 10000
 USER_LIMIT = 1000
 MAX_MESSAGES_AT_ONCE = 25
 
-ERROR_UNKNOWN_USERTAG = """ERROR The given usertag is unknown to the system.
-Please request a new one from the system with:
-
+ERROR_UNKNOWN_USERTAG = """ERROR The given usertag is unknown to the system.|
+Please request a new one from the system with:|
+|
 /register word"""
-ERROR_NOT_REGISTERED = """ERROR It appears that you're not identified.
-You need to request a usertag through /register word,
-then identify when sending commands and messages with:
-
-@usertag your command/message goes here"""
-ERROR_TOO_MANY_USERS = """ERROR Too many users are currently logged in.
-This mecanism exists to prevent the demo server from
-out of memory errors.
+ERROR_NOT_REGISTERED = """ERROR You're not identified.|
+You need to request a usertag with '/register tag',|
+then identify when sending commands and messages with:|
+@usertag message here"""
+ERROR_TOO_MANY_USERS = """ERROR Too many users are currently logged in.|
+This mecanism exists to prevent the demo server from|
+out of memory errors.|
 Please try again later."""
 
 
@@ -92,7 +91,7 @@ class ChatServer:
                 break
             i += 1
 
-        return "\n".join(out)
+        return "|".join(out)
 
     def check_command(self, msg: str, ip: str) -> str:
         msg = msg.strip()
