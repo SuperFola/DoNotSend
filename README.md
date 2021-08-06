@@ -80,3 +80,7 @@ Now I just have to tell my client scripts to use the domain `dns.example.com` to
 
 * [DNS packet structure](doc/DNSPacketStructure.md)
 * [Design choices](doc/design.md)
+
+### Code structure
+
+![](doc/diagram.svg)
