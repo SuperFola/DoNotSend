@@ -17,5 +17,5 @@ jobs:
     - name: Update diagram
       uses: githubocto/repo-visualizer@main
       with:
-        output_file: 'images/diagram.svg'
-        excluded_paths: 'dist,node_modules,vcpkg'
+        output_file: 'doc/diagram.svg'
+        excluded_paths: 'dist,node_modules'
