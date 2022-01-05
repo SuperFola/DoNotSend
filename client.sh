@@ -13,7 +13,7 @@ stripped_b32=$(echo "$2" | base32 | tr -d =)
 # create domain
 crafted_domain="${stripped_b32}.$1"
 # make the DNS query and retrieve the answers
-answer=$(dig "$crafted_domain" TXT)
+answer=$(dig @$1 "$crafted_domain" TXT)
 # decode answer
 message=$(echo "$answer" | grep -A 1 ";; ANSWER SECTION:" | tail -n 1 | grep -E -o "\".+\"" | cut -c 2- | rev | cut -c 2- | rev)
 length=$((4 - $(echo -n "$message" | wc -c) % 4))
