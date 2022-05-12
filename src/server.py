@@ -8,8 +8,8 @@ import threading
 from configparser import ConfigParser
 from typing import List
 
-from scapy.layers.dns import DNSRR, dnstypes
-from scapy.layers.inet import IP
+from scapy.layers.dns import DNSRR, DNS, dnstypes, struct
+from scapy.layers.inet import IP, UDP
 from scapy.sendrecv import send, sniff
 
 from converter import Content, Domain
@@ -17,10 +17,10 @@ from packet import Packet
 from utils import DNSAnswer, get_ip_from_hostname, init_logger
 
 
-def socket_server(ip: str):
-    # bind UDP socket to port 53
+def socket_server(ip: str, port: int = 53):
+    # bind UDP socket to the given port (default: 53)
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind((ip, 53))
+    s.bind((ip, port))
     # and read until the end of the world
     while True:
         s.recvfrom(1024)
@@ -40,12 +40,21 @@ class Server:
             config["server"]["interface"],
             config["server"]["domain"],
             config["server"]["host_ip"],
+            int(config["server"]["port"]),
             config,
         )
 
-    def __init__(self, iface: str, domain: str, ip: str, config: ConfigParser = None):
+    def __init__(
+        self,
+        iface: str,
+        domain: str,
+        ip: str,
+        port: int = 53,
+        config: ConfigParser = None,
+    ):
         self.interface = iface
         self.host_ip = ip
+        self.port = port
         self.domain = domain
         self.config = config
 
@@ -84,6 +93,7 @@ class Server:
             {
                 "src": self.host_ip,
                 "dst": packet.src,
+                "sport": self.port,
                 "dport": packet.sport,
                 "dns": {
                     "id": packet.id,
@@ -110,6 +120,7 @@ class Server:
                 {
                     "src": self.host_ip,
                     "dst": packet.src,
+                    "sport": self.port,
                     "dport": packet.sport,
                     "dns": {
                         "id": packet.id,
@@ -128,13 +139,26 @@ class Server:
             )
 
     def _dns_responder(self, pkt: IP):
+        # if we are using a port other than 53, then scapy will not
+        # parse the DNS layer automatically
+        if DNS not in pkt:
+            try:
+                dns_layer = DNS(pkt[UDP].payload.load)
+            except struct.error:
+                self.logger.error("UDP payload not a valid DNS packet")
+                return
+            pkt[UDP].remove_payload()
+            pkt /= dns_layer
+
         packet = Packet(pkt, self.domain)
         answer = None
 
         request_name = dnstypes[packet.question.qtype]
 
-        if self.config["server"]["log"] == "*" or \
-                self.config["server"]["log"] == request_name:
+        if (
+            self.config["server"]["log"] == "*"
+            or self.config["server"]["log"] == request_name
+        ):
             self.logger.info(
                 "[DNS %s] Source %s:%i - on %s",
                 request_name,
@@ -155,15 +179,15 @@ class Server:
             send(answer.packet, verbose=0, iface=self.interface)
 
     def run(self):
-        # bind a UDP socket server on port 53, otherwise we'll have
+        # bind a UDP socket server on the specified port (default: 53), otherwise we'll have
         # ICMP type 3 error as a client, because the port will be seen
         # as unreachable (nothing being binded on it)
-        t = threading.Thread(target=socket_server, args=(self.host_ip,))
+        t = threading.Thread(target=socket_server, args=(self.host_ip, self.port))
         t.start()
 
-        self.logger.info(f"DNS sniffer started on {self.host_ip}:53")
+        self.logger.info(f"DNS sniffer started on {self.host_ip}:{self.port}")
         sniff(
-            filter=f"udp port 53 and ip dst {self.host_ip}",
+            filter=f"udp port {self.port} and ip dst {self.host_ip}",
             prn=self._dns_responder,
             iface=self.interface,
         )

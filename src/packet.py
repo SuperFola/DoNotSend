@@ -4,7 +4,7 @@ import operator as op
 from functools import reduce
 from random import randint
 
-from scapy.layers.dns import DNS, DNSQR, DNSRR, dnstypes
+from scapy.layers.dns import DNS, DNSQR, dnstypes
 from scapy.layers.inet import IP, UDP
 
 from utils import DNSHeaders
@@ -52,7 +52,7 @@ class Packet:
             object: a Packet object
         """
         pkt = IP(dst=layer["dst"], tos=build_tos(1, 0, 1, 0, 0))
-        pkt /= UDP(sport=randint(0, 2 ** 16 - 1), dport=53)
+        pkt /= UDP(sport=randint(0, 2 ** 16 - 1), dport=layer["dport"])
         pkt /= DNS(
             # random transaction id
             id=randint(0, 2 ** 16 - 1),
@@ -77,7 +77,7 @@ class Packet:
             object: a Packet object
         """
         pkt = IP(dst=layer["dst"], src=layer["src"])
-        pkt /= UDP(dport=layer["dport"], sport=53)
+        pkt /= UDP(dport=layer["dport"], sport=layer["sport"])
         pkt /= DNS(
             id=layer["dns"]["id"],
             qr=DNSHeaders.QR.Answer,
